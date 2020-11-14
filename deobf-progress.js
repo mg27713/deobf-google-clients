@@ -20,14 +20,14 @@ gapi._bs = new Date().getTime();
         putIfAbsent = function(dict, key, value) { // q (q period best period) = putIfAbsent
             return dict[key] = dict[key] || value
         },
-        da = function(a) {
-            a = a.sort();
-            for (var b = [], c = void 0, d = 0; d < a.length; d++) {
-                var e = a[d];
-                e != c && b.push(e);
-                c = e
+        condenseDuplicates = function(list) { // da = condenseDuplicates (also never used????)
+            list = list.sort();
+            for (var out = [], prev = void 0, index = 0; index < list.length; index++) {
+                var current = list[index];
+                current != prev && out.push(current);
+                prev = current
             }
-            return b
+            return out
         },
         blankObject = function() { // v = blankObject
             var obj;
@@ -43,18 +43,18 @@ gapi._bs = new Date().getTime();
     C = putIfAbsent(window, "___jsl", blankObject());
     putIfAbsent(C, "I", 0);
     putIfAbsent(C, "hel", 10);
-    var D = function() {
-            var a = aa.href;
-            if (C.dpo) var b = C.h;
+    var locateJshParam = function() { // D = locateJshParam
+            var loc = location.href;
+            if (C.dpo) var res = C.h;
             else {
-                b = C.h;
-                var c = /([#].*&|[#])jsh=([^&#]*)/g,
-                    d = /([?#].*&|[?#])jsh=([^&#]*)/g;
-                if (a = a && (c.exec(a) || d.exec(a))) try {
-                    b = decodeURIComponent(a[2])
+                res = C.h;
+                var uriFormA = /([#].*&|[#])jsh=([^&#]*)/g,
+                    uriFormB = /([?#].*&|[?#])jsh=([^&#]*)/g;
+                if (loc = loc && (uriFormA.exec(loc) || uriFormB.exec(loc))) try {
+                    res = decodeURIComponent(loc[2])
                 } catch (e) {}
             }
-            return b
+            return res
         },
         fa = function(a) {
             var b = putIfAbsent(C, "PQ", []);
@@ -180,7 +180,7 @@ gapi._bs = new Date().getTime();
         na = /\/cb=/g,
         ma = /\/\//g,
         sa = function() {
-            var a = D();
+            var a = locateJshParam();
             if (!a) throw Error("Bad hint");
             return a
         };
@@ -239,7 +239,7 @@ gapi._bs = new Date().getTime();
         },
         xa = function(a, b, c) {
             wa(function() {
-                var d = b === D() ? q(x, "_", blankObject()) : blankObject();
+                var d = b === locateJshParam() ? q(x, "_", blankObject()) : blankObject();
                 d = putIfAbsent(E(b), "_", d);
                 a(d)
             }, c)
