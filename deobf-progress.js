@@ -70,7 +70,7 @@ gapi._bs = new Date().getTime();
             return putIfAbsent(putIfAbsent(C, "H", blankObject()), a, blankObject())
         };
     var perf = putIfAbsent(C, "perf", blankObject()), // F = perf
-        G = putIfAbsent(perf, "g", blankObject()),
+        perfTotalTime = putIfAbsent(perf, "g", blankObject()), // G = perfTotalTime
         perfGroups = putIfAbsent(perf, "groups", blankObject()); // perf.i = groups, ha = perfGroups
     putIfAbsent(perf, "logs", []); // also not referenced except in H
     // perf.r = logs
@@ -385,9 +385,9 @@ gapi._bs = new Date().getTime();
             return za(a, b)
         })
     };
-    G.bs0 = window.gapi._bs || (new Date).getTime();
+    perfTotalTime.bs0 = window.gapi._bs || (new Date).getTime();
     perfLog("bs0");
-    G.bs1 = (new Date).getTime();
+    perfTotalTime.bs1 = (new Date).getTime();
     perfLog("bs1");
     delete window.gapi._bs;
 }).call(this);
