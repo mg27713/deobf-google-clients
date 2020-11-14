@@ -67,12 +67,12 @@ gapi._bs = new Date().getTime();
                     }, f = 0; f < c; f++) b[f](e)
         },
         E = function(a) {
-            return q(q(C, "H", blankObject()), a, blankObject())
+            return putIfAbsent(putIfAbsent(C, "H", blankObject()), a, blankObject())
         };
-    var F = q(C, "perf", blankObject()),
-        G = q(F, "g", blankObject()),
-        ha = q(F, "i", blankObject());
-    q(F, "r", []);
+    var F = putIfAbsent(C, "perf", blankObject()),
+        G = putIfAbsent(F, "g", blankObject()),
+        ha = putIfAbsent(F, "i", blankObject());
+    putIfAbsent(F, "r", []);
     blankObject();
     blankObject();
     var H = function(a, b, c) {
@@ -85,7 +85,7 @@ gapi._bs = new Date().getTime();
         K = function(a) {
             return a.join("__").replace(/\./g, "_").replace(/\-/g, "_").replace(/,/g, "_")
         };
-    var M = v(),
+    var M = blankObject(),
         N = [],
         Q = function(a) {
             throw Error("Bad hint" + (a ? ": " + a : ""));
@@ -94,9 +94,9 @@ gapi._bs = new Date().getTime();
         for (var b in a)
             if (Object.prototype.hasOwnProperty.call(a, b)) {
                 var c = a[b];
-                "object" == typeof c ? C[b] = q(C, b, []).concat(c) : q(C, b, c)
+                "object" == typeof c ? C[b] = putIfAbsent(C, b, []).concat(c) : putIfAbsent(C, b, c)
             }
-        if (b = a.u) a = q(C, "us", []), a.push(b), (b = /^https:(.*)$/.exec(b)) && a.push("http:" + b[1])
+        if (b = a.u) a = putIfAbsent(C, "us", []), a.push(b), (b = /^https:(.*)$/.exec(b)) && a.push("http:" + b[1])
     }]);
     var ia = /^(\/[a-zA-Z0-9_\-]+)+$/,
         R = [/\/amp\//, /\/amp$/, /^\/amp$/],
@@ -378,7 +378,7 @@ gapi._bs = new Date().getTime();
             throw b && b(c), c;
         }
     };
-    x.load = function(a, b) {
+    gapi.load = function(a, b) {
         return wa(function() {
             return za(a, b)
         })
