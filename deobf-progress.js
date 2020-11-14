@@ -69,21 +69,23 @@ gapi._bs = new Date().getTime();
         E = function(a) {
             return putIfAbsent(putIfAbsent(C, "H", blankObject()), a, blankObject())
         };
-    var F = putIfAbsent(C, "perf", blankObject()),
-        G = putIfAbsent(F, "g", blankObject()),
-        ha = putIfAbsent(F, "i", blankObject());
-    putIfAbsent(F, "r", []);
+    var perf = putIfAbsent(C, "perf", blankObject()), // F = perf
+        G = putIfAbsent(perf, "g", blankObject()),
+        perfGroups = putIfAbsent(perf, "groups", blankObject()); // perf.i = groups, ha = perfGroups
+    putIfAbsent(perf, "logs", []); // also not referenced except in H
+    // perf.r = logs
+    blankObject(); // why?
     blankObject();
-    blankObject();
-    var H = function(a, b, c) {
-            var d = F.r;
-            "function" === typeof d ? d(a, b, c) : d.push([a, b, c])
+    var perfLog = function(id, group, content) { // H = perfLog
+            var logs = perf.logs;
+            "function" === typeof logs ? logs(id, group, content) : logs.push([id, group, content])
         },
-        L = function(a, b, c) {
-            b && 0 < b.length && (b = K(b), c && 0 < c.length && (b += "___" + K(c)), 28 < b.length && (b = b.substr(0, 28) + (b.length - 28)), c = b, b = putIfAbsent(ha, "_p", blankObject()), putIfAbsent(b, c, blankObject())[a] = (new Date).getTime(), H(a, "_p", c))
+        advancedPerfLog = function(id, b, c) { // L = advancedPerfLog
+            b && 0 < b.length && (b = toName(b), c && 0 < c.length && (b += "___" + toName(c)), 28 < b.length && (b = b.substr(0, 28) + (b.length - 28)), c = b, b = putIfAbsent(perfGroups, "mainGroup", blankObject()), putIfAbsent(b, c, blankObject())[id] = (new Date).getTime(), perfLog(id, "mainGroup", c))
+            // group _p = mainGroup
         },
-        K = function(a) {
-            return a.join("__").replace(/\./g, "_").replace(/\-/g, "_").replace(/,/g, "_")
+        toName = function(parts) { // K = toName
+            return parts.join("__").replace(/\./g, "_").replace(/\-/g, "_").replace(/,/g, "_")
         };
     var M = blankObject(),
         N = [],
@@ -297,11 +299,11 @@ gapi._bs = new Date().getTime();
                     var B = ((x || {}).config || {}).update;
                     B ? B(e) : e && putIfAbsent(C, "cu", []).push(e);
                     if (A) {
-                        L("me0", u, I);
+                        advancedPerfLog("me0", u, I);
                         try {
                             xa(A, c, w)
                         } finally {
-                            L("me1", u, I)
+                            advancedPerfLog("me1", u, I)
                         }
                     }
                     return 1
@@ -317,7 +319,7 @@ gapi._bs = new Date().getTime();
                     t = r.length;
                 r[t] = function(u) {
                     if (!u) return 0;
-                    L("ml1", p, I);
+                    advancedPerfLog("ml1", p, I);
                     var A = function(J) {
                             r[t] = null;
                             ea(p, u) && doTasks(function() {
@@ -341,7 +343,7 @@ gapi._bs = new Date().getTime();
                     };
                     a = pa(c, p, "gapi." + P, k);
                     k.push.apply(k, p);
-                    L("ml0", p, I);
+                    advancedPerfLog("ml0", p, I);
                     b.sync ||
                         m.___gapisync ? ua(a) : ta(a)
                 } else r[t](ba)
@@ -384,9 +386,9 @@ gapi._bs = new Date().getTime();
         })
     };
     G.bs0 = window.gapi._bs || (new Date).getTime();
-    H("bs0");
+    perfLog("bs0");
     G.bs1 = (new Date).getTime();
-    H("bs1");
+    perfLog("bs1");
     delete window.gapi._bs;
 }).call(this);
 gapi.load("", {
