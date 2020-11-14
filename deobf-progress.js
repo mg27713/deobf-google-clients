@@ -29,18 +29,18 @@ gapi._bs = new Date().getTime();
             }
             return b
         },
-        v = function() {
-            var a;
-            if ((a = Object.create) && nativeRegex.test(a)) a = a(null);
+        blankObject = function() { // v = blankObject
+            var obj;
+            if ((obj = Object.create) && nativeRegex.test(obj)) obj = obj(null);
             else {
-                a = {};
-                for (var b in a) a[b] = void 0
+                obj = {};
+                for (var key in obj) obj[key] = void 0 // what's the point of this?
             }
-            return a
+            return obj
         },
-        gapi = putIfAbsent(window, "gapi", {}); // x = gapi
+        gapi = putIfAbsent(window, "gapi", {}); // x = gapi (this isn't used either!)
     var C;
-    C = putIfAbsent(window, "___jsl", v());
+    C = putIfAbsent(window, "___jsl", blankObject());
     putIfAbsent(C, "I", 0);
     putIfAbsent(C, "hel", 10);
     var D = function() {
@@ -67,20 +67,20 @@ gapi._bs = new Date().getTime();
                     }, f = 0; f < c; f++) b[f](e)
         },
         E = function(a) {
-            return q(q(C, "H", v()), a, v())
+            return q(q(C, "H", blankObject()), a, blankObject())
         };
-    var F = q(C, "perf", v()),
-        G = q(F, "g", v()),
-        ha = q(F, "i", v());
+    var F = q(C, "perf", blankObject()),
+        G = q(F, "g", blankObject()),
+        ha = q(F, "i", blankObject());
     q(F, "r", []);
-    v();
-    v();
+    blankObject();
+    blankObject();
     var H = function(a, b, c) {
             var d = F.r;
             "function" === typeof d ? d(a, b, c) : d.push([a, b, c])
         },
         L = function(a, b, c) {
-            b && 0 < b.length && (b = K(b), c && 0 < c.length && (b += "___" + K(c)), 28 < b.length && (b = b.substr(0, 28) + (b.length - 28)), c = b, b = q(ha, "_p", v()), q(b, c, v())[a] = (new Date).getTime(), H(a, "_p", c))
+            b && 0 < b.length && (b = K(b), c && 0 < c.length && (b += "___" + K(c)), 28 < b.length && (b = b.substr(0, 28) + (b.length - 28)), c = b, b = putIfAbsent(ha, "_p", blankObject()), putIfAbsent(b, c, blankObject())[a] = (new Date).getTime(), H(a, "_p", c))
         },
         K = function(a) {
             return a.join("__").replace(/\./g, "_").replace(/\-/g, "_").replace(/,/g, "_")
@@ -239,8 +239,8 @@ gapi._bs = new Date().getTime();
         },
         xa = function(a, b, c) {
             wa(function() {
-                var d = b === D() ? q(x, "_", v()) : v();
-                d = q(E(b), "_", d);
+                var d = b === D() ? q(x, "_", blankObject()) : blankObject();
+                d = putIfAbsent(E(b), "_", d);
                 a(d)
             }, c)
         },
@@ -250,7 +250,7 @@ gapi._bs = new Date().getTime();
             va(a, c);
             b = a ? a.split(":") : [];
             var d = c.h || sa(),
-                e = q(C, "ah", v());
+                e = putIfAbsent(C, "ah", v());
             if (e["::"] && b.length) {
                 a = [];
                 for (var f = null; f = b.shift();) {
@@ -287,15 +287,15 @@ gapi._bs = new Date().getTime();
             var y = null,
                 z = !1;
             if (f && !l || !f && l) throw "Timeout requires both the timeout parameter and ontimeout parameter to be set";
-            k = q(E(c), "r", []).sort();
-            var O = q(E(c), "L", []).sort(),
+            k = putIfAbsent(E(c), "r", []).sort();
+            var O = putIfAbsent(E(c), "L", []).sort(),
                 I = [].concat(k),
                 ea = function(u, A) {
                     if (z) return 0;
                     m.clearTimeout(y);
                     O.push.apply(O, p);
                     var B = ((x || {}).config || {}).update;
-                    B ? B(e) : e && q(C, "cu", []).push(e);
+                    B ? B(e) : e && putIfAbsent(C, "cu", []).push(e);
                     if (A) {
                         L("me0", u, I);
                         try {
@@ -313,7 +313,7 @@ gapi._bs = new Date().getTime();
             var p = W(a, O);
             if (p.length) {
                 p = W(a, k);
-                var r = q(C, "CP", []),
+                var r = putIfAbsent(C, "CP", []),
                     t = r.length;
                 r[t] = function(u) {
                     if (!u) return 0;
