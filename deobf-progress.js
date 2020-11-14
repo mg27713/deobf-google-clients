@@ -56,15 +56,15 @@ gapi._bs = new Date().getTime();
             }
             return res
         },
-        fa = function(a) {
-            var b = putIfAbsent(C, "PQ", []);
-            C.PQ = [];
-            var c = b.length;
-            if (0 === c) a();
+        doTasks = function(callback) { // fa = doTasks
+            var tasks = putIfAbsent(C, "tasks", []); // C.PQ = tasks (not used unless accessed dynamically???)
+            C.tasks = [];
+            var nTasks = tasks.length;
+            if (0 === nTasks) callback();
             else
-                for (var d = 0, e = function() {
-                        ++d === c && a()
-                    }, f = 0; f < c; f++) b[f](e)
+                for (var finished = 0, doneFunc = function() {
+                        ++finished === nTasks && callback()
+                    }, whichTask = 0; whichTask < nTasks; whichTask++) tasks[whichTask](doneFunc)
         },
         E = function(a) {
             return putIfAbsent(putIfAbsent(C, "H", blankObject()), a, blankObject())
@@ -320,7 +320,7 @@ gapi._bs = new Date().getTime();
                     L("ml1", p, I);
                     var A = function(J) {
                             r[t] = null;
-                            ea(p, u) && fa(function() {
+                            ea(p, u) && doTasks(function() {
                                 d && d();
                                 J()
                             })
