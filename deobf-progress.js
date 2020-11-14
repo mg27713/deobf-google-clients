@@ -12,13 +12,13 @@ gapi._bs = new Date().getTime();
     /*
      gapi.loader.OBJECT_CREATE_TEST_OVERRIDE &&
     */
-   // var m = window, // m = window
+   var // m = window, // m = window
      //   n = document, // n = document
      //   aa = window.location, // aa = location (it's not even used wtf)
         ba = function() {},
         nativeRegex = /\[native code\]/, // ca = nativeRegex
-        computeIfAbsent = function(a, b, c) { // q (q period best period) = computeIfAbsent
-            return a[b] = a[b] || c
+        putIfAbsent = function(dict, key, value) { // q (q period best period) = putIfAbsent
+            return dict[key] = dict[key] || value
         },
         da = function(a) {
             a = a.sort();
@@ -31,18 +31,18 @@ gapi._bs = new Date().getTime();
         },
         v = function() {
             var a;
-            if ((a = Object.create) && ca.test(a)) a = a(null);
+            if ((a = Object.create) && nativeRegex.test(a)) a = a(null);
             else {
                 a = {};
                 for (var b in a) a[b] = void 0
             }
             return a
         },
-        x = computeIfAbsent(window, "gapi", {});
+        gapi = putIfAbsent(window, "gapi", {}); // x = gapi
     var C;
-    C = computeIfAbsent(window, "___jsl", v());
-    computeIfAbsent(C, "I", 0);
-    computeIfAbsent(C, "hel", 10);
+    C = putIfAbsent(window, "___jsl", v());
+    putIfAbsent(C, "I", 0);
+    putIfAbsent(C, "hel", 10);
     var D = function() {
             var a = aa.href;
             if (C.dpo) var b = C.h;
@@ -57,7 +57,7 @@ gapi._bs = new Date().getTime();
             return b
         },
         fa = function(a) {
-            var b = computeIfAbsent(C, "PQ", []);
+            var b = putIfAbsent(C, "PQ", []);
             C.PQ = [];
             var c = b.length;
             if (0 === c) a();
