@@ -378,8 +378,8 @@ gapi._bs = new Date().getTime();
             createScript: allowAll,
             createScriptURL: allowAll
         })
-    } catch (a) {
-        global.console && global.console.error(a.message)
+    } catch (securityError) {
+        global.console && global.console.error(securityError.message)
     }
     freePolicy2 = freePolicy1;
     var freePolicy = freePolicy2; // Y = freePolicy
