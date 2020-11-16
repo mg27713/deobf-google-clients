@@ -192,7 +192,7 @@ gapi._bs = new Date().getTime();
         (a = a[0]) || hintError("missing_hint");
         return "https://apis.google.com" + toURI(a, b, c, d)
     };
-    var U = decodeURI("%73cript"),
+    var scriptTag = decodeURI("%73cript"),
         V = /^[-+_0-9\/A-Za-z]+={0,2}$/,
         W = function(a, b) {
             for (var c = [], d = 0; d < a.length; ++d) {
@@ -219,12 +219,12 @@ gapi._bs = new Date().getTime();
                 var b = X(),
                     c = "";
                 null !== b && (c = ' nonce="' + b + '"');
-                a = "<" + U + ' src="' + encodeURI(a) + '"' + c + "></" + U + ">";
+                a = "<" + scriptTag + ' src="' + encodeURI(a) + '"' + c + "></" + scriptTag + ">";
                 document.write(Y ? Y.createHTML(a) : a)
             }
         },
         ta = function(a) {
-            var b = document.createElement(U);
+            var b = document.createElement(scriptTag);
             b.setAttribute("src", Y ? Y.createScriptURL(a) : a);
             a = X();
             null !== a && b.setAttribute("nonce", a);
