@@ -369,9 +369,9 @@ gapi._bs = new Date().getTime();
         },
         Aa;
     var Ba = null,
-        Z = global.trustedTypes;
-    if (Z && Z.createPolicy) try {
-        Ba = Z.createPolicy("gapi#gapi", {
+        trustedTypes = global.trustedTypes;
+    if (trustedTypes && trustedTypes.createPolicy) try {
+        Ba = trustedTypes.createPolicy("gapi#gapi", {
             createHTML: h,
             createScript: h,
             createScriptURL: h
