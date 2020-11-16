@@ -192,7 +192,7 @@ gapi._bs = new Date().getTime();
         (a = a[0]) || hintError("missing_hint");
         return "https://apis.google.com" + toURI(a, b, c, d)
     };
-    var scriptTag = decodeURI("%73cript"),
+    var scriptTag = decodeURI("%73cript"), // U = script
         verifyNonce = /^[-+_0-9\/A-Za-z]+={0,2}$/, // V = verifyNonce
         W = function(array1, array2) { // W = intersection
             for (var out = [], index = 0; index < array1.length; ++index) {
@@ -245,7 +245,7 @@ gapi._bs = new Date().getTime();
             a = findNonce();
             null !== a && b.setAttribute("nonce", a);
             b.async = "true";
-            (a = document.getElementsByTagName(U)[0]) ? a.parentNode.insertBefore(b, a): (document.head || document.body || document.documentElement).appendChild(b)
+            (a = document.getElementsByTagName(scriptTag)[0]) ? a.parentNode.insertBefore(b, a): (document.head || document.body || document.documentElement).appendChild(b)
         },
         va = function(a, b) {
             var c = b && b._c;
