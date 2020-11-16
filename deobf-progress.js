@@ -81,13 +81,13 @@ gapi._bs = new Date().getTime();
             "function" === typeof logs ? logs(id, group, content) : logs.push([id, group, content])
         },
         advancedPerfLog = function(id, b, c) { // L = advancedPerfLog
-            b && 0 < b.length && (b = toName(b), c && 0 < c.length && (b += "___" + toName(c)), 28 < b.length && (b = b.substr(0, 28) + (b.length - 28)), c = b, b = putIfAbsent(perfGroups, "mainGroup", blankObject()), putIfAbsent(b, c, blankObject())[id] = (new Date).getTime(), perfLog(id, "mainGroup", c))
+            b && 0 < b.length && (b = multiToName(b), c && 0 < c.length && (b += "___" + multiToName(c)), 28 < b.length && (b = b.substr(0, 28) + (b.length - 28)), c = b, b = putIfAbsent(perfGroups, "mainGroup", blankObject()), putIfAbsent(b, c, blankObject())[id] = (new Date).getTime(), perfLog(id, "mainGroup", c))
             // group _p = mainGroup
         },
-        toName = function(parts) { // K = toName
+        multiToName = function(parts) { // K = multiToName
             return parts.join("__").replace(/\./g, "_").replace(/\-/g, "_").replace(/,/g, "_")
         };
-    var M = blankObject(),
+    var hintProcessors = blankObject(), // M = hintProcessors
         N = [],
         hintError = function(a) { // Q = hintError
             throw Error("Bad hint" + (a ? ": " + a : ""));
@@ -101,80 +101,82 @@ gapi._bs = new Date().getTime();
         if (b = a.u) a = putIfAbsent(C, "us", []), a.push(b), (b = /^https:(.*)$/.exec(b)) && a.push("http:" + b[1])
     }]);
     var ia = /^(\/[a-zA-Z0-9_\-]+)+$/,
-        R = [/\/amp\//, /\/amp$/, /^\/amp$/],
-        ja = /^[a-zA-Z0-9\-_\.,!]+$/,
+        ampPaths = [/\/amp\//, /\/amp$/, /^\/amp$/], // R = ampPaths
+        paramValueValidate = /^[a-zA-Z0-9\-_\.,!]+$/, // ja = paramValueValidate
         ka = /^gapi\.loaded_[0-9]+$/,
-        la = /^[a-zA-Z0-9,._-]+$/,
-        pa = function(a, b, c, d) {
+        verifyName = /^[a-zA-Z0-9,._-]+$/, // la = verifyName
+        generateLoadURL = function(a, b, c, d) { // pa = generateLoadURL
             var e = a.split(";"),
-                f = e.shift(),
-                l = M[f],
-                k = null;
-            l ? k = l(e, b, c, d) : hintError("no hint processor for: " + f);
-            k || hintError("failed to generate load url");
-            b = k;
+                hintProcessorName = e.shift(),
+                processHint = hintProcessors[hintProcessorName],
+                loadURL = null;
+            processHint ? loadURL = processHint(e, b, c, d) : hintError("no hint processor for: " + hintProcessorName);
+            loadURL || hintError("failed to generate load url");
+            b = loadURL;
             c = b.match(ma);
             (d = b.match(na)) && 1 === d.length && oa.test(b) && c && 1 === c.length || hintError("failed sanity: " + a);
-            return k
+            return loadURL
         },
-        ra = function(a, b, c, d) {
-            a = qa(a);
-            ka.test(c) || hintError("invalid_callback");
-            b = S(b);
-            d = d && d.length ? S(d) : null;
-            var e =
-                function(f) {
-                    return encodeURIComponent(f).replace(/%2C/g, ",")
+        toURI = function(path, b, callback, d) { // ra = toURI
+            var decoded = decodePath(path);
+            ka.test(callback) || hintError("invalid_callback");
+            b = toName(b);
+            d = d && d.length ? toName(d) : null;
+            var encode =
+                function(component) {
+                    return encodeURIComponent(component).replace(/%2C/g, ",")
                 };
-            return [encodeURIComponent(a.pathPrefix).replace(/%2C/g, ",").replace(/%2F/g, "/"), "/k=", e(a.version), "/m=", e(b), d ? "/exm=" + e(d) : "", "/rt=j/sv=1/d=1/ed=1", a.a ? "/am=" + e(a.a) : "", a.c ? "/rs=" + e(a.c) : "", a.f ? "/t=" + e(a.f) : "", "/cb=", e(c)].join("")
+            return [encodeURIComponent(decoded.pathPrefix).replace(/%2C/g, ",").replace(/%2F/g, "/"), "/k=", encode(decoded.version), "/m=", encode(b), d ? "/exm=" + encode(d) : "", "/rt=j/sv=1/d=1/ed=1", decoded.a ? "/am=" + encode(decoded.a) : "", decoded.c ? "/rs=" + encode(decoded.c) : "", decoded.f ? "/t=" + encode(decoded.f) : "", "/cb=", encode(callback)].join("")
         },
-        qa = function(a) {
-            "/" !== a.charAt(0) && hintError("relative path");
-            for (var b = a.substring(1).split("/"), c = []; b.length;) {
-                a = b.shift();
-                if (!a.length || 0 == a.indexOf(".")) hintError("empty/relative directory");
-                else if (0 < a.indexOf("=")) {
-                    b.unshift(a);
+        decodePath = function(path) {  // qa = decodePath
+            "/" !== path.charAt(0) && hintError("relative path");
+            for (var parts = path.substring(1).split("/"), outParts = []; parts.length;) {
+                path = parts.shift();
+                if (!path.length || 0 == path.indexOf(".")) hintError("empty/relative directory");
+                else if (0 < path.indexOf("=")) {
+                    parts.unshift(path);
                     break
                 }
-                c.push(a)
+                outParts.push(path)
             }
-            a = {};
-            for (var d = 0, e = b.length; d < e; ++d) {
-                var f = b[d].split("="),
-                    l = decodeURIComponent(f[0]),
-                    k = decodeURIComponent(f[1]);
-                2 == f.length && l && k && (a[l] = a[l] || k)
+            
+            var searchParams = {};
+            
+            for (var current = 0, len = parts.length; current < len; ++current) {
+                var sides = parts[current].split("="),
+                    key = decodeURIComponent(sides[0]),
+                    value = decodeURIComponent(sides[1]);
+                2 == sides.length && key && value && (a[key] = a[key] || value)
             }
-            b = "/" + c.join("/");
-            ia.test(b) || hintError("invalid_prefix");
-            c = 0;
-            for (d = R.length; c < d; ++c) R[c].test(b) && hintError("invalid_prefix");
-            c = T(a, "k", !0);
-            d = T(a, "am");
-            e = T(a, "rs");
-            a = T(a, "t");
+            var prefix = "/" + outParts.join("/");
+            ia.test(prefix) || hintError("invalid_prefix");
+            var version = 0;
+            for (len = ampPaths.length; version < len; ++version) ampPaths[version].test(prefix) && hintError("invalid_prefix");
+            version = getParamValue(searchParams, "k", true);
+            var d = getParamValue(searchParams, "am");
+            e = getParamValue(searchParams, "rs");
+            var t = getParamValue(searchParams, "t");
             return {
-                pathPrefix: b,
-                version: c,
+                pathPrefix: prefix,
+                version: version,
                 a: d,
                 c: e,
-                f: a
+                f: t
             }
         },
-        S = function(a) {
-            for (var b = [], c = 0, d = a.length; c < d; ++c) {
-                var e = a[c].replace(/\./g, "_").replace(/-/g, "_");
-                la.test(e) && b.push(e)
+        toName = function(thing) { // S = toName
+            for (var out = [], current = 0, size = thing.length; current < size; ++c) {
+                var thisChar = thing[current].replace(/\./g, "_").replace(/-/g, "_");
+                verifyName.test(thisChar) && out.push(thisChar)
             }
-            return b.join(",")
+            return out.join(",")
         },
-        T = function(a, b, c) {
-            a = a[b];
-            !a && c && hintError("missing: " + b);
-            if (a) {
-                if (ja.test(a)) return a;
-                hintError("invalid: " + b)
+        getParamValue = function(searchParams, key, required) { // T = getParamValue
+            var value = searchParams[key];
+            !value && required && hintError("missing: " + key);
+            if (value) {
+                if (paramValueValidate.test(value)) return value;
+                hintError("invalid: " + key)
             }
             return null
         },
@@ -186,9 +188,9 @@ gapi._bs = new Date().getTime();
             if (!a) throw Error("Bad hint");
             return a
         };
-    M.m = function(a, b, c, d) {
+    hintProcessors.m = function(a, b, c, d) {
         (a = a[0]) || hintError("missing_hint");
-        return "https://apis.google.com" + ra(a, b, c, d)
+        return "https://apis.google.com" + toURI(a, b, c, d)
     };
     var U = decodeURI("%73cript"),
         V = /^[-+_0-9\/A-Za-z]+={0,2}$/,
@@ -341,7 +343,7 @@ gapi._bs = new Date().getTime();
                         r[t](u);
                         x[P] = null
                     };
-                    a = pa(c, p, "gapi." + P, k);
+                    a = generateLoadURL(c, p, "gapi." + P, k);
                     k.push.apply(k, p);
                     advancedPerfLog("ml0", p, I);
                     b.sync ||
