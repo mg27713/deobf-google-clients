@@ -42,7 +42,7 @@ gapi._bs = new Date().getTime();
     var C;
     C = putIfAbsent(window, "___jsl", blankObject());
     putIfAbsent(C, "I", 0);
-    putIfAbsent(C, "hel", 10);
+    putIfAbsent(C, "remainingVisibleErrors", 10); // hel = remainingVisibleErrors
     var locateJshParam = function() { // D = locateJshParam
             var loc = location.href;
             if (C.dpo) var res = C.h;
@@ -260,7 +260,7 @@ gapi._bs = new Date().getTime();
                 }
         },
         xa = function(a, b, c) {
-            wa(function() {
+            callQuiet(function() {
                 var d = b === locateJshParam() ? putIfAbsent(gapi, "_", blankObject()) : blankObject();
                 d = putIfAbsent(E(b), "_", d);
                 a(d)
@@ -365,7 +365,7 @@ gapi._bs = new Date().getTime();
                     k.push.apply(k, p);
                     advancedPerfLog("ml0", p, I);
                     b.sync ||
-                        m.___gapisync ? ua(a) : ta(a)
+                        m.___gapisync ? loadScript(a) : loadScriptPostWindow(a)
                 } else r[t](ba)
             } else ea(p) && d && d()
         },
@@ -383,25 +383,25 @@ gapi._bs = new Date().getTime();
     }
     freePolicy2 = freePolicy1;
     var freePolicy = freePolicy2; // Y = freePolicy
-    var wa = function(a, b) {
-        if (C.hee && 0 < C.hel) try {
-            return a()
-        } catch (c) {
-            b && b(c), C.hel--, za("debug_error", function() {
+    var callQuiet = function(func, errorFilter) { // wa = callQuiet
+        if (C.hee && 0 < C.remainingVisibleErrors) try {
+            return func()
+        } catch (error) {
+            errorFilter && errorFilter(error), C.remainingVisibleErrors--, za("debug_error", function() {
                 try {
-                    window.___jsl.hefn(c)
-                } catch (d) {
-                    throw c;
+                    window.___jsl.hefn(error)
+                } catch (ignoredError) {
+                    throw error;
                 }
             })
         } else try {
-            return a()
-        } catch (c) {
-            throw b && b(c), c;
+            return func()
+        } catch (error) {
+            throw errorFilter && errorFilter(error), error;
         }
     };
     gapi.load = function(a, b) {
-        return wa(function() {
+        return callQuiet(function() {
             return za(a, b)
         })
     };
