@@ -193,30 +193,46 @@ gapi._bs = new Date().getTime();
         return "https://apis.google.com" + toURI(a, b, c, d)
     };
     var scriptTag = decodeURI("%73cript"),
-        V = /^[-+_0-9\/A-Za-z]+={0,2}$/,
-        W = function(a, b) {
-            for (var c = [], d = 0; d < a.length; ++d) {
-                var e = a[d],
-                    f;
-                if (f = e) {
-                    a: {
-                        for (f = 0; f < b.length; f++)
-                            if (b[f] === e) break a;f = -1
+        verifyNonce = /^[-+_0-9\/A-Za-z]+={0,2}$/, // V = verifyNonce
+        W = function(array1, array2) { // W = intersection
+            for (var out = [], index = 0; index < array1.length; ++index) {
+                var current = array1[index],
+                    otherIndex,
+                    exists;
+                
+                if (e) {
+                    searchBlock: {
+                        for (otherIndex = 0; otherIndex < array2.length; otherIndex++)
+                            if (array2[otherIndex] === current)
+                                break searchBlock;
+                        
+                        otherIndex = -1
                     }
-                    f = 0 > f
+                    exists = 0 > otherIndex
                 }
-                f && c.push(e)
+                exists && out.push(current)
             }
-            return c
+            return out
         },
-        X = function() {
-            var a = C.nonce;
-            return void 0 !== a ? a && a === String(a) && a.match(V) ? a : C.nonce = null : document.querySelector ? (a = document.querySelector("script[nonce]")) ? (a = a.nonce || a.getAttribute("nonce") || "", a && a === String(a) && a.match(V) ? C.nonce = a : C.nonce = null) : null : null
+        findNonce = function() { // X = findNonce
+            var nonce = C.nonce;
+            
+            return void 0 !== nonce 
+                ? nonce && nonce === String(nonce) && nonce.match(verifyNonce) 
+                    ? nonce 
+                    : C.nonce = null 
+                : document.querySelector 
+                    ? (nonce = document.querySelector("script[nonce]")) 
+                        ? (nonce = nonce.nonce || nonce.getAttribute("nonce") || "", nonce && nonce === String(nonce) && nonce.match(verifyNonce) 
+                            ? C.nonce = nonce 
+                            : C.nonce = null)
+                        : null 
+                    : null
         },
         ua = function(a) {
             if ("loading" != document.readyState) ta(a);
             else {
-                var b = X(),
+                var b = findNonce(),
                     c = "";
                 null !== b && (c = ' nonce="' + b + '"');
                 a = "<" + scriptTag + ' src="' + encodeURI(a) + '"' + c + "></" + scriptTag + ">";
@@ -226,7 +242,7 @@ gapi._bs = new Date().getTime();
         ta = function(a) {
             var b = document.createElement(scriptTag);
             b.setAttribute("src", Y ? Y.createScriptURL(a) : a);
-            a = X();
+            a = findNonce();
             null !== a && b.setAttribute("nonce", a);
             b.async = "true";
             (a = document.getElementsByTagName(U)[0]) ? a.parentNode.insertBefore(b, a): (document.head || document.body || document.documentElement).appendChild(b)
