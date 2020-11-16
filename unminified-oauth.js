@@ -188,7 +188,7 @@ gapi._bs = new Date().getTime();
         (a = a[0]) || Q("missing_hint");
         return "https://apis.google.com" + ra(a, b, c, d)
     };
-    var scriptTag = decodeURI("%73cript"), // U = scriptTag
+    var U = decodeURI("%73cript"),
         V = /^[-+_0-9\/A-Za-z]+={0,2}$/,
         W = function(a, b) {
             for (var c = [], d = 0; d < a.length; ++d) {
@@ -215,17 +215,17 @@ gapi._bs = new Date().getTime();
                 var b = X(),
                     c = "";
                 null !== b && (c = ' nonce="' + b + '"');
-                a = "<" + scriptTag + ' src="' + encodeURI(a) + '"' + c + "></" + scriptTag + ">";
+                a = "<" + U + ' src="' + encodeURI(a) + '"' + c + "></" + U + ">";
                 n.write(Y ? Y.createHTML(a) : a)
             }
         },
         ta = function(a) {
-            var b = n.createElement(scriptTag);
+            var b = n.createElement(U);
             b.setAttribute("src", Y ? Y.createScriptURL(a) : a);
             a = X();
             null !== a && b.setAttribute("nonce", a);
             b.async = "true";
-            (a = n.getElementsByTagName(scriptTag)[0]) ? a.parentNode.insertBefore(b, a): (n.head || n.body || n.documentElement).appendChild(b)
+            (a = n.getElementsByTagName(U)[0]) ? a.parentNode.insertBefore(b, a): (n.head || n.body || n.documentElement).appendChild(b)
         },
         va = function(a, b) {
             var c = b && b._c;
