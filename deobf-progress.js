@@ -6,8 +6,8 @@ gapi._bs = new Date().getTime();
      SPDX-License-Identifier: Apache-2.0
     */
     var global = this || self,
-        h = function(a) {
-            return a
+        allowAll = function(check) {
+            return check
         };
     /*
      gapi.loader.OBJECT_CREATE_TEST_OVERRIDE &&
@@ -372,9 +372,9 @@ gapi._bs = new Date().getTime();
         trustedTypes = global.trustedTypes;
     if (trustedTypes && trustedTypes.createPolicy) try {
         Ba = trustedTypes.createPolicy("gapi#gapi", {
-            createHTML: h,
-            createScript: h,
-            createScriptURL: h
+            createHTML: allowAll,
+            createScript: allowAll,
+            createScriptURL: allowAll
         })
     } catch (a) {
         global.console && global.console.error(a.message)
