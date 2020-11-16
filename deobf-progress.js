@@ -89,7 +89,7 @@ gapi._bs = new Date().getTime();
         };
     var M = blankObject(),
         N = [],
-        Q = function(a) {
+        hintError = function(a) { // Q = hintError
             throw Error("Bad hint" + (a ? ": " + a : ""));
         };
     N.push(["jsl", function(a) {
@@ -110,16 +110,16 @@ gapi._bs = new Date().getTime();
                 f = e.shift(),
                 l = M[f],
                 k = null;
-            l ? k = l(e, b, c, d) : Q("no hint processor for: " + f);
-            k || Q("failed to generate load url");
+            l ? k = l(e, b, c, d) : hintError("no hint processor for: " + f);
+            k || hintError("failed to generate load url");
             b = k;
             c = b.match(ma);
-            (d = b.match(na)) && 1 === d.length && oa.test(b) && c && 1 === c.length || Q("failed sanity: " + a);
+            (d = b.match(na)) && 1 === d.length && oa.test(b) && c && 1 === c.length || hintError("failed sanity: " + a);
             return k
         },
         ra = function(a, b, c, d) {
             a = qa(a);
-            ka.test(c) || Q("invalid_callback");
+            ka.test(c) || hintError("invalid_callback");
             b = S(b);
             d = d && d.length ? S(d) : null;
             var e =
@@ -129,10 +129,10 @@ gapi._bs = new Date().getTime();
             return [encodeURIComponent(a.pathPrefix).replace(/%2C/g, ",").replace(/%2F/g, "/"), "/k=", e(a.version), "/m=", e(b), d ? "/exm=" + e(d) : "", "/rt=j/sv=1/d=1/ed=1", a.a ? "/am=" + e(a.a) : "", a.c ? "/rs=" + e(a.c) : "", a.f ? "/t=" + e(a.f) : "", "/cb=", e(c)].join("")
         },
         qa = function(a) {
-            "/" !== a.charAt(0) && Q("relative path");
+            "/" !== a.charAt(0) && hintError("relative path");
             for (var b = a.substring(1).split("/"), c = []; b.length;) {
                 a = b.shift();
-                if (!a.length || 0 == a.indexOf(".")) Q("empty/relative directory");
+                if (!a.length || 0 == a.indexOf(".")) hintError("empty/relative directory");
                 else if (0 < a.indexOf("=")) {
                     b.unshift(a);
                     break
@@ -147,9 +147,9 @@ gapi._bs = new Date().getTime();
                 2 == f.length && l && k && (a[l] = a[l] || k)
             }
             b = "/" + c.join("/");
-            ia.test(b) || Q("invalid_prefix");
+            ia.test(b) || hintError("invalid_prefix");
             c = 0;
-            for (d = R.length; c < d; ++c) R[c].test(b) && Q("invalid_prefix");
+            for (d = R.length; c < d; ++c) R[c].test(b) && hintError("invalid_prefix");
             c = T(a, "k", !0);
             d = T(a, "am");
             e = T(a, "rs");
@@ -171,10 +171,10 @@ gapi._bs = new Date().getTime();
         },
         T = function(a, b, c) {
             a = a[b];
-            !a && c && Q("missing: " + b);
+            !a && c && hintError("missing: " + b);
             if (a) {
                 if (ja.test(a)) return a;
-                Q("invalid: " + b)
+                hintError("invalid: " + b)
             }
             return null
         },
@@ -187,7 +187,7 @@ gapi._bs = new Date().getTime();
             return a
         };
     M.m = function(a, b, c, d) {
-        (a = a[0]) || Q("missing_hint");
+        (a = a[0]) || hintError("missing_hint");
         return "https://apis.google.com" + ra(a, b, c, d)
     };
     var U = decodeURI("%73cript"),
@@ -241,7 +241,7 @@ gapi._bs = new Date().getTime();
         },
         xa = function(a, b, c) {
             wa(function() {
-                var d = b === locateJshParam() ? q(x, "_", blankObject()) : blankObject();
+                var d = b === locateJshParam() ? putIfAbsent(gapi, "_", blankObject()) : blankObject();
                 d = putIfAbsent(E(b), "_", d);
                 a(d)
             }, c)
@@ -252,7 +252,7 @@ gapi._bs = new Date().getTime();
             va(a, c);
             b = a ? a.split(":") : [];
             var d = c.h || sa(),
-                e = putIfAbsent(C, "ah", v());
+                e = putIfAbsent(C, "ah", blankObject());
             if (e["::"] && b.length) {
                 a = [];
                 for (var f = null; f = b.shift();) {
