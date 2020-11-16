@@ -5,7 +5,7 @@ gapi._bs = new Date().getTime();
      Copyright The Closure Library Authors.
      SPDX-License-Identifier: Apache-2.0
     */
-    var g = this || self,
+    var global = this || self,
         h = function(a) {
             return a
         };
@@ -314,7 +314,7 @@ gapi._bs = new Date().getTime();
                     if (z) return 0;
                     m.clearTimeout(y);
                     O.push.apply(O, p);
-                    var B = ((x || {}).config || {}).update;
+                    var B = ((gapi || {}).config || {}).update;
                     B ? B(e) : e && putIfAbsent(C, "cu", []).push(e);
                     if (A) {
                         advancedPerfLog("me0", u, I);
@@ -355,9 +355,9 @@ gapi._bs = new Date().getTime();
                 };
                 if (p.length) {
                     var P = "loaded_" + C.I++;
-                    x[P] = function(u) {
+                    gapi[P] = function(u) {
                         r[t](u);
-                        x[P] = null
+                        gapi[P] = null
                     };
                     a = generateLoadURL(c, p, "gapi." + P, k);
                     k.push.apply(k, p);
@@ -369,7 +369,7 @@ gapi._bs = new Date().getTime();
         },
         Aa;
     var Ba = null,
-        Z = g.trustedTypes;
+        Z = global.trustedTypes;
     if (Z && Z.createPolicy) try {
         Ba = Z.createPolicy("gapi#gapi", {
             createHTML: h,
@@ -377,7 +377,7 @@ gapi._bs = new Date().getTime();
             createScriptURL: h
         })
     } catch (a) {
-        g.console && g.console.error(a.message)
+        global.console && global.console.error(a.message)
     }
     Aa = Ba;
     var Y = Aa;
