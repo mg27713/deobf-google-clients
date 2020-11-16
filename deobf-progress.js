@@ -192,7 +192,7 @@ gapi._bs = new Date().getTime();
         (a = a[0]) || hintError("missing_hint");
         return "https://apis.google.com" + toURI(a, b, c, d)
     };
-    var scriptTag = decodeURI("%73cript"), // U = script
+    var scriptTag = decodeURI("%73cript"), // U = scriptTag
         verifyNonce = /^[-+_0-9\/A-Za-z]+={0,2}$/, // V = verifyNonce
         W = function(array1, array2) { // W = intersection
             for (var out = [], index = 0; index < array1.length; ++index) {
@@ -229,23 +229,25 @@ gapi._bs = new Date().getTime();
                         : null 
                     : null
         },
-        ua = function(a) {
-            if ("loading" != document.readyState) ta(a);
+        loadScript = function(uri) { // ua = loadScript
+            if ("loading" != document.readyState) loadScriptPostWindow(uri);
             else {
-                var b = findNonce(),
-                    c = "";
-                null !== b && (c = ' nonce="' + b + '"');
-                a = "<" + scriptTag + ' src="' + encodeURI(a) + '"' + c + "></" + scriptTag + ">";
-                document.write(Y ? Y.createHTML(a) : a)
+                var nonce = findNonce(),
+                    nonceCode = "";
+                null !== nonce && (nonceCode = ' nonce="' + nonce + '"');
+                var code = "<" + scriptTag + ' src="' + encodeURI(uri) + '"' + nonceCode + "></" + scriptTag + ">";
+                document.write(freePolicy ? freePolicy.createHTML(code) : code)
             }
         },
-        ta = function(a) {
-            var b = document.createElement(scriptTag);
-            b.setAttribute("src", Y ? Y.createScriptURL(a) : a);
-            a = findNonce();
-            null !== a && b.setAttribute("nonce", a);
-            b.async = "true";
-            (a = document.getElementsByTagName(scriptTag)[0]) ? a.parentNode.insertBefore(b, a): (document.head || document.body || document.documentElement).appendChild(b)
+        loadScriptPostWindow = function(uri) { // ta = loadScriptPostWindow
+            var script = document.createElement(scriptTag);
+            script.setAttribute("src", freePolicy ? freePolicy.createScriptURL(uri) : uri);
+            var nonce = findNonce();
+            null !== nonce && script.setAttribute("nonce", nonce);
+            script.async = "true";
+            
+            var firstScript;
+            (firstScript = document.getElementsByTagName(scriptTag)[0]) ? firstScript.parentNode.insertBefore(script, firstScript): (document.head || document.body || document.documentElement).appendChild(script)
         },
         va = function(a, b) {
             var c = b && b._c;
@@ -367,11 +369,11 @@ gapi._bs = new Date().getTime();
                 } else r[t](ba)
             } else ea(p) && d && d()
         },
-        Aa;
-    var Ba = null,
+        freePolicy2; // Aa = freePolicy2
+    var freePolicy1 = null, // Ba = freePolicy1
         trustedTypes = global.trustedTypes;
     if (trustedTypes && trustedTypes.createPolicy) try {
-        Ba = trustedTypes.createPolicy("gapi#gapi", {
+        freePolicy1 = trustedTypes.createPolicy("gapi#gapi", {
             createHTML: allowAll,
             createScript: allowAll,
             createScriptURL: allowAll
@@ -379,8 +381,8 @@ gapi._bs = new Date().getTime();
     } catch (a) {
         global.console && global.console.error(a.message)
     }
-    Aa = Ba;
-    var Y = Aa;
+    freePolicy2 = freePolicy1;
+    var freePolicy = freePolicy2; // Y = freePolicy
     var wa = function(a, b) {
         if (C.hee && 0 < C.hel) try {
             return a()
