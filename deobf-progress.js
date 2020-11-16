@@ -20,7 +20,7 @@ gapi._bs = new Date().getTime();
         putIfAbsent = function(dict, key, value) { // q (q period best period) = putIfAbsent
             return dict[key] = dict[key] || value
         },
-        condenseDuplicates = function(list) { // da = condenseDuplicates (also never used????)
+        condenseDuplicates = function(list) { // da = condenseDuplicates
             list = list.sort();
             for (var out = [], prev = void 0, index = 0; index < list.length; index++) {
                 var current = list[index];
@@ -296,7 +296,7 @@ gapi._bs = new Date().getTime();
             } else ya(b || [], c, d)
         },
         ya = function(a, b, c) {
-            a = da(a) || [];
+            a = condenseDuplicates(a) || [];
             var d = b.callback,
                 e = b.config,
                 f = b.timeout,
