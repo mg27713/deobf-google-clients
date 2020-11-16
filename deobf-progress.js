@@ -183,10 +183,10 @@ gapi._bs = new Date().getTime();
         oa = /^https?:\/\/[a-z0-9_.-]+\.google(rs)?\.com(:\d+)?\/[a-zA-Z0-9_.,!=\-\/]+$/,
         na = /\/cb=/g,
         ma = /\/\//g,
-        sa = function() {
-            var a = locateJshParam();
-            if (!a) throw Error("Bad hint");
-            return a
+        getJSH = function() { // sa = getJSH
+            var jsh = locateJshParam();
+            if (!jsh) throw Error("Bad hint");
+            return jsh
         };
     hintProcessors.m = function(a, b, c, d) {
         (a = a[0]) || hintError("missing_hint");
@@ -253,7 +253,7 @@ gapi._bs = new Date().getTime();
             "function" == typeof b && (c = {}, c.callback = b);
             va(a, c);
             b = a ? a.split(":") : [];
-            var d = c.h || sa(),
+            var d = c.h || getJSH(),
                 e = putIfAbsent(C, "ah", blankObject());
             if (e["::"] && b.length) {
                 a = [];
