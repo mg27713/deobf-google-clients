@@ -105,16 +105,16 @@ gapi._bs = new Date().getTime();
         paramValueValidate = /^[a-zA-Z0-9\-_\.,!]+$/, // ja = paramValueValidate
         testCallback = /^gapi\.loaded_[0-9]+$/, // ka = testCallback
         verifyName = /^[a-zA-Z0-9,._-]+$/, // la = verifyName
-        generateLoadURL = function(hint, b, c, d) { // pa = generateLoadURL
+        generateLoadURL = function(hint, b, callback, d) { // pa = generateLoadURL
             var parts = hint.split(";"),
                 hintProcessorName = parts.shift(),
                 processHint = hintProcessors[hintProcessorName],
                 loadURL = null;
-            processHint ? loadURL = processHint(parts, b, c, d) : hintError("no hint processor for: " + hintProcessorName);
+            processHint ? loadURL = processHint(parts, b, callback, d) : hintError("no hint processor for: " + hintProcessorName);
             loadURL || hintError("failed to generate load url");
-            b = loadURL;
-            c = b.match(ma);
-            (d = b.match(na)) && 1 === d.length && oa.test(b) && c && 1 === c.length || hintError("failed sanity: " + hint);
+//             b = loadURL;
+            var c = loadURL.match(ma);
+            (d = loadURL.match(na)) && 1 === d.length && oa.test(loadURL) && c && 1 === c.length || hintError("failed sanity: " + hint);
             return loadURL
         },
         toURI = function(path, b, callback, d) { // ra = toURI
