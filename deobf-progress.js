@@ -88,11 +88,11 @@ gapi._bs = new Date().getTime();
             return parts.join("__").replace(/\./g, "_").replace(/\-/g, "_").replace(/,/g, "_")
         };
     var hintProcessors = blankObject(), // M = hintProcessors
-        N = [],
+        configHandlers = [], // N = configHandlers
         hintError = function(a) { // Q = hintError
             throw Error("Bad hint" + (a ? ": " + a : ""));
         };
-    N.push(["jsl", function(a) {
+    configHandlers.push(["jsl", function(a) {
         for (var b in a)
             if (Object.prototype.hasOwnProperty.call(a, b)) {
                 var c = a[b];
@@ -249,14 +249,13 @@ gapi._bs = new Date().getTime();
             var firstScript;
             (firstScript = document.getElementsByTagName(scriptTag)[0]) ? firstScript.parentNode.insertBefore(script, firstScript): (document.head || document.body || document.documentElement).appendChild(script)
         },
-        va = function(a, b) {
-            var c = b && b._c;
-            if (c)
-                for (var d = 0; d < N.length; d++) {
-                    var e = N[d][0],
-                        f = N[d][1];
-                    f && Object.prototype.hasOwnProperty.call(c,
-                        e) && f(c[e], a, b)
+        loadConfig = function(a, configRoot) { // va = loadConfig
+            var config = configRoot && configRoot.config;
+            if (config)
+                for (var num = 0; num < configHandlers.length; num++) {
+                    var property = configHandlers[num][0],
+                        handler = configHandlers[num][1];
+                    handler && Object.prototype.hasOwnProperty.call(config, property) && handler(config[property], a, configRoot)
                 }
         },
         useIndependentCtx = function(func, owner, errorFilter) { // xa = useIndependentCtx
@@ -269,7 +268,7 @@ gapi._bs = new Date().getTime();
         load = function(a, paramConfig) { // za = load
             var masterConfig = paramConfig || {};
             "function" == typeof paramConfig && (masterConfig = {}, masterConfig.callback = paramConfig);
-            va(a, masterConfig);
+            loadConfig(a, masterConfig);
             
             var parts = a ? a.split(":") : [];
             var defaultHint = masterConfig.h || getJSH(),
@@ -428,7 +427,7 @@ gapi._bs = new Date().getTime();
 }).call(this);
 gapi.load("", {
     callback: window["gapi_onload"],
-    _c: {
+    config: {
         "jsl": {
             "ci": {
                 "deviceType": "desktop",
