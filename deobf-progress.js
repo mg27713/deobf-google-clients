@@ -267,12 +267,12 @@ gapi._bs = new Date().getTime();
             }, errorFilter)
         },
         load = function(a, paramConfig) { // za = load
-            var config = paramConfig || {};
-            "function" == typeof paramConfig && (config = {}, config.callback = paramConfig);
-            va(a, config);
+            var masterConfig = paramConfig || {};
+            "function" == typeof paramConfig && (masterConfig = {}, masterConfig.callback = paramConfig);
+            va(a, masterConfig);
             
             var parts = a ? a.split(":") : [];
-            var defaultHint = config.h || getJSH(),
+            var defaultHint = masterConfig.h || getJSH(),
                 e = putIfAbsent(C, "ah", blankObject()),
                 configs;
             
@@ -292,24 +292,24 @@ gapi._bs = new Date().getTime();
                 
                 var size = configs.length;
                 if (1 < size) {
-                    var callback = config.callback;
-                    callback && (config.callback = function() {
+                    var callback = masterConfig.callback;
+                    callback && (masterConfig.callback = function() {
                         0 == --size && callback()
                     })
                 }
                 
                 var theConfig;
                 for (; theConfig = configs.shift();)
-                    ya(theConfig.b, config, theConfig.hint)
-            } else ya(parts || [], config, defaultHint)
+                    ya(theConfig.b, masterConfig, theConfig.hint)
+            } else ya(parts || [], masterConfig, defaultHint)
         },
-        ya = function(a, b, c) {
+        ya = function(a, requestInfo, hint) {
             a = condenseDuplicates(a) || [];
-            var callback = b.callback,
-                config = b.config,
-                timeout = b.timeout,
-                ontimeout = b.ontimeout,
-                onerrorLenient = b.onerror,
+            var callback = requestInfo.callback,
+                config = requestInfo.config,
+                timeout = requestInfo.timeout,
+                ontimeout = requestInfo.ontimeout,
+                onerrorLenient = requestInfo.onerror,
                 onerror = void 0;
             "function" == typeof onerrorLenient && (onerror = onerrorLenient);
             var timeoutHandler = null,
@@ -320,8 +320,8 @@ gapi._bs = new Date().getTime();
             // why not just say 
             //     timeout != ontimeout
             
-            k = putIfAbsent(independentCtx(c), "r", []).sort();
-            var O = putIfAbsent(independentCtx(c), "L", []).sort(),
+            k = putIfAbsent(independentCtx(hint), "r", []).sort();
+            var O = putIfAbsent(independentCtx(hint), "L", []).sort(),
                 I = [].concat(k),
                 ea = function(u, log) {
                     if (timedOut)
@@ -334,7 +334,7 @@ gapi._bs = new Date().getTime();
                     if (log) {
                         advancedPerfLog("me0", u, I);
                         try {
-                            useIndependentCtx(log, c, onerror)
+                            useIndependentCtx(log, hint, onerror)
                         } finally {
                             advancedPerfLog("me1", u, I)
                         }
