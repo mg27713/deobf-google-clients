@@ -1,4 +1,4 @@
-var gapi = window.gapi = window.gapi || {};
+var gapi = window.gapi = window.gapi || {}; // basically gapi = gapi || {}
 gapi._bs = new Date().getTime();
 (function() {
     /*
@@ -39,15 +39,15 @@ gapi._bs = new Date().getTime();
             return obj
         },
         gapi = putIfAbsent(window, "gapi", {}); // x = gapi (this isn't used either!)
-    var C;
-    C = putIfAbsent(window, "___jsl", blankObject());
-    putIfAbsent(C, "howManyLoaded", 0);
-    putIfAbsent(C, "remainingVisibleErrors", 10); // hel = remainingVisibleErrors
+    var ctx;
+    ctx = putIfAbsent(window, "___jsl", blankObject()); // C = ctx
+    putIfAbsent(ctx, "howManyLoaded", 0);
+    putIfAbsent(ctx, "remainingVisibleErrors", 10); // hel = remainingVisibleErrors
     var locateJshParam = function() { // D = locateJshParam
             var loc = location.href;
-            if (C.dpo) var res = C.h;
+            if (ctx.dpo) var res = ctx.h;
             else {
-                res = C.h;
+                res = ctx.h;
                 var uriFormA = /([#].*&|[#])jsh=([^&#]*)/g,
                     uriFormB = /([?#].*&|[?#])jsh=([^&#]*)/g;
                 if (loc = loc && (uriFormA.exec(loc) || uriFormB.exec(loc))) try {
@@ -57,8 +57,8 @@ gapi._bs = new Date().getTime();
             return res
         },
         doTasks = function(callback) { // fa = doTasks
-            var tasks = putIfAbsent(C, "tasks", []); // C.PQ = tasks (not used unless accessed dynamically???)
-            C.tasks = [];
+            var tasks = putIfAbsent(ctx, "tasks", []); // C.PQ = tasks (not used unless accessed dynamically???)
+            ctx.tasks = [];
             var nTasks = tasks.length;
             if (0 === nTasks) callback();
             else
@@ -67,9 +67,9 @@ gapi._bs = new Date().getTime();
                     }, whichTask = 0; whichTask < nTasks; whichTask++) tasks[whichTask](doneFunc)
         },
         independentCtx = function(obj) {
-            return putIfAbsent(putIfAbsent(C, "independentContexts", blankObject()), obj, blankObject()) // C.H = independentContexts
+            return putIfAbsent(putIfAbsent(ctx, "independentContexts", blankObject()), obj, blankObject()) // C.H = independentContexts
         };
-    var perf = putIfAbsent(C, "perf", blankObject()), // F = perf
+    var perf = putIfAbsent(ctx, "perf", blankObject()), // F = perf
         perfTotalTime = putIfAbsent(perf, "g", blankObject()), // G = perfTotalTime
         perfGroups = putIfAbsent(perf, "groups", blankObject()); // perf.i = groups, ha = perfGroups
     putIfAbsent(perf, "logs", []); // also not referenced except in H
@@ -96,9 +96,9 @@ gapi._bs = new Date().getTime();
         for (var b in a)
             if (Object.prototype.hasOwnProperty.call(a, b)) {
                 var c = a[b];
-                "object" == typeof c ? C[b] = putIfAbsent(C, b, []).concat(c) : putIfAbsent(C, b, c)
+                "object" == typeof c ? ctx[b] = putIfAbsent(ctx, b, []).concat(c) : putIfAbsent(ctx, b, c)
             }
-        if (b = a.u) a = putIfAbsent(C, "us", []), a.push(b), (b = /^https:(.*)$/.exec(b)) && a.push("http:" + b[1])
+        if (b = a.u) a = putIfAbsent(ctx, "us", []), a.push(b), (b = /^https:(.*)$/.exec(b)) && a.push("http:" + b[1])
     }]);
     var ia = /^(\/[a-zA-Z0-9_\-]+)+$/,
         ampPaths = [/\/amp\//, /\/amp$/, /^\/amp$/], // R = ampPaths
@@ -215,17 +215,17 @@ gapi._bs = new Date().getTime();
             return out
         },
         findNonce = function() { // X = findNonce
-            var nonce = C.nonce;
+            var nonce = ctx.nonce;
             
             return void 0 !== nonce 
                 ? nonce && nonce === String(nonce) && nonce.match(verifyNonce) 
                     ? nonce 
-                    : C.nonce = null 
+                    : ctx.nonce = null 
                 : document.querySelector 
                     ? (nonce = document.querySelector("script[nonce]")) 
                         ? (nonce = nonce.nonce || nonce.getAttribute("nonce") || "", nonce && nonce === String(nonce) && nonce.match(verifyNonce) 
-                            ? C.nonce = nonce 
-                            : C.nonce = null)
+                            ? ctx.nonce = nonce 
+                            : ctx.nonce = null)
                         : null 
                     : null
         },
@@ -273,7 +273,7 @@ gapi._bs = new Date().getTime();
             
             var parts = a ? a.split(":") : [];
             var defaultHint = masterConfig.h || getJSH(),
-                e = putIfAbsent(C, "ah", blankObject()),
+                e = putIfAbsent(ctx, "ah", blankObject()),
                 configs;
             
             if (e["::"] && parts.length) {
@@ -350,7 +350,7 @@ gapi._bs = new Date().getTime();
             var currentTokens = onlyInSource(a, finishedTokens);
             if (currentTokens.length) {
                 currentTokens = onlyInSource(a, startedTokens);
-                var handlers = putIfAbsent(C, "CP", []),
+                var handlers = putIfAbsent(ctx, "CP", []),
                     len = handlers.length;
                 handlers[len] = function(u) {
                     if (!u) return 0;
@@ -371,7 +371,7 @@ gapi._bs = new Date().getTime();
                     } : doTasksAndCallback(callNextHandler)
                 };
                 if (currentTokens.length) {
-                    var callbackName = "loaded_" + C.howManyLoaded++;
+                    var callbackName = "loaded_" + ctx.howManyLoaded++;
                     gapi[callbackName] = function(u) {
                         handlers[t](u);
                         gapi[callbackName] = null
@@ -399,10 +399,10 @@ gapi._bs = new Date().getTime();
     freePolicy2 = freePolicy1;
     var freePolicy = freePolicy2; // Y = freePolicy
     var callQuiet = function(func, errorFilter) { // wa = callQuiet
-        if (C.hee && 0 < C.remainingVisibleErrors) try {
+        if (ctx.hee && 0 < ctx.remainingVisibleErrors) try {
             return func()
         } catch (error) {
-            errorFilter && errorFilter(error), C.remainingVisibleErrors--, load("debug_error", function() {
+            errorFilter && errorFilter(error), ctx.remainingVisibleErrors--, load("debug_error", function() {
                 try {
                     window.___jsl.hefn(error)
                 } catch (ignoredError) {
