@@ -92,13 +92,18 @@ gapi._bs = new Date().getTime();
         hintError = function(a) { // Q = hintError
             throw Error("Bad hint" + (a ? ": " + a : ""));
         };
-    configHandlers.push(["jsl", function(a) {
-        for (var b in a)
-            if (Object.prototype.hasOwnProperty.call(a, b)) {
-                var c = a[b];
-                "object" == typeof c ? ctx[b] = putIfAbsent(ctx, b, []).concat(c) : putIfAbsent(ctx, b, c)
+    configHandlers.push(["jsl", function(subconfig) {
+        for (var prop in subconfig)
+            if (Object.prototype.hasOwnProperty.call(subconfig, prop)) {
+                var value = subconfig[prop];
+                "object" == typeof value ? ctx[prop] = putIfAbsent(ctx, prop, []).concat(value) : putIfAbsent(ctx, prop, value)
             }
-        if (b = a.u) a = putIfAbsent(ctx, "us", []), a.push(b), (b = /^https:(.*)$/.exec(b)) && a.push("http:" + b[1])
+        
+        var gapiScripts, scriptLoc;
+        if (scriptLoc = subconfig.u)
+            gapiScripts = putIfAbsent(ctx, "us", []),
+            gapiScripts.push(scriptLoc),
+            (scriptLoc = /^https:(.*)$/.exec(scriptLoc)) && gapiScripts.push("http:" + scriptLoc[1]) // basically add both http and https to the mysterious list
     }]);
     var ia = /^(\/[a-zA-Z0-9_\-]+)+$/,
         ampPaths = [/\/amp\//, /\/amp$/, /^\/amp$/], // R = ampPaths
@@ -188,9 +193,9 @@ gapi._bs = new Date().getTime();
             if (!jsh) throw Error("Bad hint");
             return jsh
         };
-    hintProcessors.m = function(a, b, c, d) {
-        (a = a[0]) || hintError("missing_hint");
-        return "https://apis.google.com" + toURI(a, b, c, d)
+    hintProcessors.m = function(hint, b, callback, d) {
+        (hint = hint[0]) || hintError("missing_hint");
+        return "https://apis.google.com" + toURI(hint, b, callback, d)
     };
     var scriptTag = decodeURI("%73cript"), // U = scriptTag
         verifyNonce = /^[-+_0-9\/A-Za-z]+={0,2}$/, // V = verifyNonce
