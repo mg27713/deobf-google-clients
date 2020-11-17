@@ -14,8 +14,8 @@ gapi._bs = new Date().getTime();
     */
    var // m = window, // m = window
      //   n = document, // n = document
-     //   aa = window.location, // aa = location (it's not even used wtf)
-        ba = function() {},
+     //   aa = window.location, // aa = location (it's not even used I don't understand)
+        doNothing = function() {},
         nativeRegex = /\[native code\]/, // ca = nativeRegex
         putIfAbsent = function(dict, key, value) { // q (q period best period) = putIfAbsent
             return dict[key] = dict[key] || value
@@ -41,7 +41,7 @@ gapi._bs = new Date().getTime();
         gapi = putIfAbsent(window, "gapi", {}); // x = gapi (this isn't used either!)
     var C;
     C = putIfAbsent(window, "___jsl", blankObject());
-    putIfAbsent(C, "I", 0);
+    putIfAbsent(C, "howManyLoaded", 0);
     putIfAbsent(C, "remainingVisibleErrors", 10); // hel = remainingVisibleErrors
     var locateJshParam = function() { // D = locateJshParam
             var loc = location.href;
@@ -103,7 +103,7 @@ gapi._bs = new Date().getTime();
     var ia = /^(\/[a-zA-Z0-9_\-]+)+$/,
         ampPaths = [/\/amp\//, /\/amp$/, /^\/amp$/], // R = ampPaths
         paramValueValidate = /^[a-zA-Z0-9\-_\.,!]+$/, // ja = paramValueValidate
-        ka = /^gapi\.loaded_[0-9]+$/,
+        testCallback = /^gapi\.loaded_[0-9]+$/, // ka = testCallback
         verifyName = /^[a-zA-Z0-9,._-]+$/, // la = verifyName
         generateLoadURL = function(a, b, c, d) { // pa = generateLoadURL
             var e = a.split(";"),
@@ -119,7 +119,7 @@ gapi._bs = new Date().getTime();
         },
         toURI = function(path, b, callback, d) { // ra = toURI
             var decoded = decodePath(path);
-            ka.test(callback) || hintError("invalid_callback");
+            testCallback.test(callback) || hintError("invalid_callback");
             b = toName(b);
             d = d && d.length ? toName(d) : null;
             var encode =
@@ -194,7 +194,7 @@ gapi._bs = new Date().getTime();
     };
     var scriptTag = decodeURI("%73cript"), // U = scriptTag
         verifyNonce = /^[-+_0-9\/A-Za-z]+={0,2}$/, // V = verifyNonce
-        W = function(array1, array2) { // W = intersection
+        intersection = function(array1, array2) { // W = intersection
             for (var out = [], index = 0; index < array1.length; ++index) {
                 var current = array1[index],
                     otherIndex,
@@ -299,75 +299,84 @@ gapi._bs = new Date().getTime();
         },
         ya = function(a, b, c) {
             a = condenseDuplicates(a) || [];
-            var d = b.callback,
-                e = b.config,
-                f = b.timeout,
-                l = b.ontimeout,
-                k = b.onerror,
-                w = void 0;
-            "function" == typeof k && (w = k);
-            var y = null,
-                z = !1;
-            if (f && !l || !f && l) throw "Timeout requires both the timeout parameter and ontimeout parameter to be set";
+            var callback = b.callback,
+                config = b.config,
+                timeout = b.timeout,
+                ontimeout = b.ontimeout,
+                onerrorLenient = b.onerror,
+                onerror = void 0;
+            "function" == typeof onerrorLenient && (onerror = onerrorLenient);
+            var timeoutHandler = null,
+                timedOut = !1; // false
+            
+            if (timeout && !ontimeout || !timeout && ontimeout)
+                throw "Timeout requires both the timeout parameter and ontimeout parameter to be set";
+            // why not just say 
+            //     timeout != ontimeout
+            
             k = putIfAbsent(independentCtx(c), "r", []).sort();
             var O = putIfAbsent(independentCtx(c), "L", []).sort(),
                 I = [].concat(k),
-                ea = function(u, A) {
-                    if (z) return 0;
-                    m.clearTimeout(y);
+                ea = function(u, log) {
+                    if (timedOut)
+                        return 0;
+                    
+                    clearTimeout(timeoutHandler); // previously window.clearTimeout
                     O.push.apply(O, p);
-                    var B = ((gapi || {}).config || {}).update;
-                    B ? B(e) : e && putIfAbsent(C, "cu", []).push(e);
-                    if (A) {
+                    var update = ((gapi || {}).config || {}).update;
+                    update ? update(config) : config && putIfAbsent(C, "cu", []).push(config);
+                    if (log) {
                         advancedPerfLog("me0", u, I);
                         try {
-                            useIndependentCtx(A, c, w)
+                            useIndependentCtx(log, c, onerror)
                         } finally {
                             advancedPerfLog("me1", u, I)
                         }
                     }
                     return 1
                 };
-            0 < f && (y = m.setTimeout(function() {
-                z = !0;
-                l()
-            }, f));
-            var p = W(a, O);
+            
+            0 < timeout && (timeoutHandler = setTimeout(function() {
+                timedOut = !0; // true
+                ontimeout()
+            }, timeout));
+            
+            var p = intersection(a, O);
             if (p.length) {
-                p = W(a, k);
-                var r = putIfAbsent(C, "CP", []),
-                    t = r.length;
-                r[t] = function(u) {
+                p = intersection(a, k);
+                var handlers = putIfAbsent(C, "CP", []),
+                    len = handlers.length;
+                handlers[len] = function(u) {
                     if (!u) return 0;
                     advancedPerfLog("ml1", p, I);
-                    var A = function(J) {
-                            r[t] = null;
+                    var doTasksAndCallback = function(paramCallback) {
+                            handlers[len] = null;
                             ea(p, u) && doTasks(function() {
-                                d && d();
-                                J()
+                                callback && callback();
+                                paramCallback()
                             })
                         },
-                        B = function() {
-                            var J = r[t + 1];
-                            J && J()
+                        callNextHandler = function() {
+                            var next = handlers[len + 1];
+                            next && next()
                         };
-                    0 < t && r[t - 1] ? r[t] = function() {
-                        A(B)
-                    } : A(B)
+                    0 < len && handlers[len - 1] ? handlers[len] = function() {
+                        doTasksAndCallback(callNextHandler)
+                    } : doTasksAndCallback(callNextHandler)
                 };
                 if (p.length) {
-                    var P = "loaded_" + C.I++;
-                    gapi[P] = function(u) {
-                        r[t](u);
-                        gapi[P] = null
+                    var callbackName = "loaded_" + C.howManyLoaded++;
+                    gapi[callbackName] = function(u) {
+                        handlers[t](u);
+                        gapi[callbackName] = null
                     };
-                    a = generateLoadURL(c, p, "gapi." + P, k);
+                    var loadURL = generateLoadURL(c, p, "gapi." + callbackName, k);
                     k.push.apply(k, p);
                     advancedPerfLog("ml0", p, I);
                     b.sync ||
-                        m.___gapisync ? loadScript(a) : loadScriptPostWindow(a)
-                } else r[t](ba)
-            } else ea(p) && d && d()
+                        ___gapisync ? loadScript(loadURL) : loadScriptPostWindow(loadURL)
+                } else handlers[t](doNothing)
+            } else ea(p) && callback && callback()
         },
         freePolicy2; // Aa = freePolicy2
     var freePolicy1 = null, // Ba = freePolicy1
