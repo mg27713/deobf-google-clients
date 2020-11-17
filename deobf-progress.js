@@ -266,36 +266,42 @@ gapi._bs = new Date().getTime();
                 func(d)
             }, errorFilter)
         },
-        za = function(a, b) {
-            var c = b || {};
-            "function" == typeof b && (c = {}, c.callback = b);
-            va(a, c);
-            b = a ? a.split(":") : [];
-            var d = c.h || getJSH(),
-                e = putIfAbsent(C, "ah", blankObject());
-            if (e["::"] && b.length) {
-                a = [];
-                for (var f = null; f = b.shift();) {
-                    var l = f.split(".");
-                    l = e[f] || e[l[1] && "ns:" + l[0] || ""] || d;
-                    var k = a.length && a[a.length - 1] || null,
-                        w = k;
-                    k && k.hint == l || (w = {
-                        hint: l,
+        load = function(a, paramConfig) { // za = load
+            var config = paramConfig || {};
+            "function" == typeof paramConfig && (config = {}, config.callback = paramConfig);
+            va(a, config);
+            
+            var parts = a ? a.split(":") : [];
+            var defaultHint = config.h || getJSH(),
+                e = putIfAbsent(C, "ah", blankObject()),
+                configs;
+            
+            if (e["::"] && parts.length) {
+                configs = [];
+                for (var current = null; current = parts.shift();) {
+                    var hint = current.split(".");
+                    hint = e[f] || e[hint[1] && "ns:" + hint[0] || ""] || defaultHint;
+                    var prevConfig = a.length && a[a.length - 1] || null,
+                        currentConfig = prevConfig;
+                    prevConfig && prevConfig.hint == hint || (currentConfig = {
+                        hint: hint,
                         b: []
-                    }, a.push(w));
-                    w.b.push(f)
+                    }, a.push(currentConfig));
+                    currentConfig.b.push(current)
                 }
-                var y = a.length;
-                if (1 < y) {
-                    var z = c.callback;
-                    z && (c.callback = function() {
-                        0 ==
-                            --y && z()
+                
+                var size = configs.length;
+                if (1 < size) {
+                    var callback = config.callback;
+                    callback && (config.callback = function() {
+                        0 == --size && callback()
                     })
                 }
-                for (; b = a.shift();) ya(b.b, c, b.hint)
-            } else ya(b || [], c, d)
+                
+                var theConfig;
+                for (; theConfig = configs.shift();)
+                    ya(theConfig.b, config, theConfig.hint)
+            } else ya(parts || [], config, defaultHint)
         },
         ya = function(a, b, c) {
             a = condenseDuplicates(a) || [];
@@ -396,7 +402,7 @@ gapi._bs = new Date().getTime();
         if (C.hee && 0 < C.remainingVisibleErrors) try {
             return func()
         } catch (error) {
-            errorFilter && errorFilter(error), C.remainingVisibleErrors--, za("debug_error", function() {
+            errorFilter && errorFilter(error), C.remainingVisibleErrors--, load("debug_error", function() {
                 try {
                     window.___jsl.hefn(error)
                 } catch (ignoredError) {
@@ -409,9 +415,9 @@ gapi._bs = new Date().getTime();
             throw errorFilter && errorFilter(error), error;
         }
     };
-    gapi.load = function(a, b) {
+    gapi.load = function(a, config) {
         return callQuiet(function() {
-            return za(a, b)
+            return load(a, config)
         })
     };
     perfTotalTime.bs0 = window.gapi._bs || (new Date).getTime();
