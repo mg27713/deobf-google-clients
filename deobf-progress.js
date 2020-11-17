@@ -66,8 +66,8 @@ gapi._bs = new Date().getTime();
                         ++finished === nTasks && callback()
                     }, whichTask = 0; whichTask < nTasks; whichTask++) tasks[whichTask](doneFunc)
         },
-        E = function(a) {
-            return putIfAbsent(putIfAbsent(C, "H", blankObject()), a, blankObject())
+        independentCtx = function(obj) {
+            return putIfAbsent(putIfAbsent(C, "independentContexts", blankObject()), obj, blankObject()) // C.H = independentContexts
         };
     var perf = putIfAbsent(C, "perf", blankObject()), // F = perf
         perfTotalTime = putIfAbsent(perf, "g", blankObject()), // G = perfTotalTime
@@ -259,12 +259,12 @@ gapi._bs = new Date().getTime();
                         e) && f(c[e], a, b)
                 }
         },
-        xa = function(a, b, c) {
+        useIndependentCtx = function(func, owner, errorFilter) { // xa = useIndependentCtx
             callQuiet(function() {
-                var d = b === locateJshParam() ? putIfAbsent(gapi, "_", blankObject()) : blankObject();
-                d = putIfAbsent(E(b), "_", d);
-                a(d)
-            }, c)
+                var d = owner === locateJshParam() ? putIfAbsent(gapi, "_", blankObject()) : blankObject();
+                d = putIfAbsent(independentCtx(owner), "_", d);
+                func(d)
+            }, errorFilter)
         },
         za = function(a, b) {
             var c = b || {};
@@ -309,8 +309,8 @@ gapi._bs = new Date().getTime();
             var y = null,
                 z = !1;
             if (f && !l || !f && l) throw "Timeout requires both the timeout parameter and ontimeout parameter to be set";
-            k = putIfAbsent(E(c), "r", []).sort();
-            var O = putIfAbsent(E(c), "L", []).sort(),
+            k = putIfAbsent(independentCtx(c), "r", []).sort();
+            var O = putIfAbsent(independentCtx(c), "L", []).sort(),
                 I = [].concat(k),
                 ea = function(u, A) {
                     if (z) return 0;
@@ -321,7 +321,7 @@ gapi._bs = new Date().getTime();
                     if (A) {
                         advancedPerfLog("me0", u, I);
                         try {
-                            xa(A, c, w)
+                            useIndependentCtx(A, c, w)
                         } finally {
                             advancedPerfLog("me1", u, I)
                         }
