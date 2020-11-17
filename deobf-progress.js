@@ -105,16 +105,16 @@ gapi._bs = new Date().getTime();
         paramValueValidate = /^[a-zA-Z0-9\-_\.,!]+$/, // ja = paramValueValidate
         testCallback = /^gapi\.loaded_[0-9]+$/, // ka = testCallback
         verifyName = /^[a-zA-Z0-9,._-]+$/, // la = verifyName
-        generateLoadURL = function(a, b, c, d) { // pa = generateLoadURL
-            var e = a.split(";"),
-                hintProcessorName = e.shift(),
+        generateLoadURL = function(hint, b, c, d) { // pa = generateLoadURL
+            var parts = hint.split(";"),
+                hintProcessorName = parts.shift(),
                 processHint = hintProcessors[hintProcessorName],
                 loadURL = null;
-            processHint ? loadURL = processHint(e, b, c, d) : hintError("no hint processor for: " + hintProcessorName);
+            processHint ? loadURL = processHint(parts, b, c, d) : hintError("no hint processor for: " + hintProcessorName);
             loadURL || hintError("failed to generate load url");
             b = loadURL;
             c = b.match(ma);
-            (d = b.match(na)) && 1 === d.length && oa.test(b) && c && 1 === c.length || hintError("failed sanity: " + a);
+            (d = b.match(na)) && 1 === d.length && oa.test(b) && c && 1 === c.length || hintError("failed sanity: " + hint);
             return loadURL
         },
         toURI = function(path, b, callback, d) { // ra = toURI
@@ -300,10 +300,10 @@ gapi._bs = new Date().getTime();
                 
                 var theConfig;
                 for (; theConfig = configs.shift();)
-                    ya(theConfig.b, masterConfig, theConfig.hint)
-            } else ya(parts || [], masterConfig, defaultHint)
+                    getAndLoadScript(theConfig.b, masterConfig, theConfig.hint)
+            } else getAndLoadScript(parts || [], masterConfig, defaultHint)
         },
-        ya = function(a, requestInfo, hint) {
+        getAndLoadScript = function(a, requestInfo, hint) { // ya = getAndLoadScript
             a = condenseDuplicates(a) || [];
             var callback = requestInfo.callback,
                 config = requestInfo.config,
@@ -320,15 +320,15 @@ gapi._bs = new Date().getTime();
             // why not just say 
             //     timeout != ontimeout
             
-            k = putIfAbsent(independentCtx(hint), "r", []).sort();
-            var O = putIfAbsent(independentCtx(hint), "L", []).sort(),
+            var startedTokens = putIfAbsent(independentCtx(hint), "r", []).sort();
+            var finishedTokens = putIfAbsent(independentCtx(hint), "L", []).sort(),
                 I = [].concat(k),
-                ea = function(u, log) {
+                finishTokens = function(u, log) {
                     if (timedOut)
                         return 0;
                     
                     clearTimeout(timeoutHandler); // previously window.clearTimeout
-                    O.push.apply(O, p);
+                    finishedTokens.push.apply(finishedTokens, currentTokens);
                     var update = ((gapi || {}).config || {}).update;
                     update ? update(config) : config && putIfAbsent(C, "cu", []).push(config);
                     if (log) {
@@ -347,17 +347,17 @@ gapi._bs = new Date().getTime();
                 ontimeout()
             }, timeout));
             
-            var p = onlyInSource(a, O);
-            if (p.length) {
-                p = onlyInSource(a, k);
+            var currentTokens = onlyInSource(a, finishedTokens);
+            if (currentTokens.length) {
+                currentTokens = onlyInSource(a, startedTokens);
                 var handlers = putIfAbsent(C, "CP", []),
                     len = handlers.length;
                 handlers[len] = function(u) {
                     if (!u) return 0;
-                    advancedPerfLog("ml1", p, I);
+                    advancedPerfLog("ml1", currentTokens, I);
                     var doTasksAndCallback = function(paramCallback) {
                             handlers[len] = null;
-                            ea(p, u) && doTasks(function() {
+                            finishTokens(currentTokens, u) && doTasks(function() {
                                 callback && callback();
                                 paramCallback()
                             })
@@ -370,19 +370,19 @@ gapi._bs = new Date().getTime();
                         doTasksAndCallback(callNextHandler)
                     } : doTasksAndCallback(callNextHandler)
                 };
-                if (p.length) {
+                if (currentTokens.length) {
                     var callbackName = "loaded_" + C.howManyLoaded++;
                     gapi[callbackName] = function(u) {
                         handlers[t](u);
                         gapi[callbackName] = null
                     };
-                    var loadURL = generateLoadURL(c, p, "gapi." + callbackName, k);
-                    k.push.apply(k, p);
-                    advancedPerfLog("ml0", p, I);
-                    b.sync ||
+                    var loadURL = generateLoadURL(hint, currentTokens, "gapi." + callbackName, startedTokens);
+                    startedTokens.push.apply(startedTokens, currentTokens);
+                    advancedPerfLog("ml0", currentTokens, I);
+                    requestInfo.sync ||
                         ___gapisync ? loadScript(loadURL) : loadScriptPostWindow(loadURL)
                 } else handlers[t](doNothing)
-            } else ea(p) && callback && callback()
+            } else finishTokens(currentTokens) && callback && callback()
         },
         freePolicy2; // Aa = freePolicy2
     var freePolicy1 = null, // Ba = freePolicy1
