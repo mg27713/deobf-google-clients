@@ -194,23 +194,23 @@ gapi._bs = new Date().getTime();
     };
     var scriptTag = decodeURI("%73cript"), // U = scriptTag
         verifyNonce = /^[-+_0-9\/A-Za-z]+={0,2}$/, // V = verifyNonce
-        intersection = function(array1, array2) { // W = intersection
-            for (var out = [], index = 0; index < array1.length; ++index) {
-                var current = array1[index],
+        onlyInSource = function(source, target) { // W = onlyInSource
+            for (var out = [], index = 0; index < source.length; ++index) {
+                var current = source[index],
                     otherIndex,
-                    exists;
+                    doesNotExist;
                 
-                if (e) {
+                if (current) {
                     searchBlock: {
-                        for (otherIndex = 0; otherIndex < array2.length; otherIndex++)
-                            if (array2[otherIndex] === current)
+                        for (otherIndex = 0; otherIndex < target.length; otherIndex++)
+                            if (target[otherIndex] === current)
                                 break searchBlock;
                         
                         otherIndex = -1
                     }
-                    exists = 0 > otherIndex
+                    doesNotExist = 0 > otherIndex
                 }
-                exists && out.push(current)
+                doesNotExist && out.push(current)
             }
             return out
         },
@@ -341,9 +341,9 @@ gapi._bs = new Date().getTime();
                 ontimeout()
             }, timeout));
             
-            var p = intersection(a, O);
+            var p = onlyInSource(a, O);
             if (p.length) {
-                p = intersection(a, k);
+                p = onlyInSource(a, k);
                 var handlers = putIfAbsent(C, "CP", []),
                     len = handlers.length;
                 handlers[len] = function(u) {
