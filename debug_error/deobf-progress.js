@@ -26,7 +26,7 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
                 a ? b.cancel(a) : (b.By--, 0 >= b.By && b.cancel())
             }
             this.gL ? this.gL.call(this.lH, this) : this.nE = !0;
-            this.xn || (a = new ctx.RQ(this), ctx.SQ(this), ctx.TQ(this, !1, a))
+            this.xn || (a = new ctx.CanceledError(this), ctx.SQ(this), ctx.TQ(this, !1, a))
         }
     };
     ctx.QQ.prototype.dH = function(a, b) {
@@ -63,7 +63,7 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
             e = k
         });
         this.Zm(d, function(g) {
-            g instanceof ctx.RQ ? f.cancel() : e(g)
+            g instanceof ctx.CanceledError ? f.cancel() : e(g)
         });
         return f.then(a, b, c)
     };
@@ -109,12 +109,12 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
     ctx.K(AlreadyCalledError, ctx.Vc);
     AlreadyCalledError.prototype.message = "Deferred has already fired";
     AlreadyCalledError.prototype.name = "AlreadyCalledError"; // thank you :)
-    ctx.RQ = function() {
+    ctx.CanceledError = function() { // ctx.RQ = ctx.CanceledError
         ctx.Vc.call(this)
     };
-    ctx.K(ctx.RQ, ctx.Vc);
-    ctx.RQ.prototype.message = "Deferred was canceled";
-    ctx.RQ.prototype.name = "CanceledError";
+    ctx.K(ctx.CanceledError, ctx.Vc);
+    ctx.CanceledError.prototype.message = "Deferred was canceled";
+    ctx.CanceledError.prototype.name = "CanceledError"; // thanks again!
     var YQ = function(a) {
         this.Ca = ctx.A.setTimeout((0, ctx.R)(this.n1, this), 0);
         this.ju = a
@@ -214,7 +214,7 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
                 if (ctx.Jb() && ctx.Wx(28) || ctx.Ib() && ctx.Wx(14)) d.stack = b.stack;
                 b = d
             }
-            c.Ob || b instanceof ctx.RQ || (c.xD ? hR(c.xD, b, a) : c.zo && 10 > c.zo.length && c.zo.push([a, b]))
+            c.Ob || b instanceof ctx.CanceledError || (c.xD ? hR(c.xD, b, a) : c.zo && 10 > c.zo.length && c.zo.push([a, b]))
         },
         fR = function(a) {
             a.zo && (ctx.ob(a.zo, function(b) {
