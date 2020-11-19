@@ -1,6 +1,6 @@
 /* JS */
 CALLBACK(function(_) {
-    var window = this;
+    var window = this; // was never obfuscated, wow!
     /*
      Portions of this code are from MochiKit, received by
      The Closure Authors under the MIT license. All other code is Copyright
@@ -426,7 +426,7 @@ CALLBACK(function(_) {
             gR(new mR(e))
         },
         yR = !1;
-    (window.___jsl = window.___jsl || {}).hefn = function(a, b) {
+    (window.___jsl = window.___jsl || {}).hefn = function(a, b) { // there's the jsl hefn that was uncracked in the loader!
         yR || (xR(), yR = !0);
         var c = _.S("debug/reportExceptionRate");
         ("number" === typeof c ? c : 0) >= Math.random() && (b ? iR(b, a) : iR(null, a));
