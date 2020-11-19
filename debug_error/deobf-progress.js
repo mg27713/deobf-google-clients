@@ -12,7 +12,7 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
         this.lH = b || null;
         this.Jq = this.xn = !1;
         this.ij = void 0;
-        this.nE = this.ZR = this.zy = !1;
+        this.notCalled = this.ZR = this.zy = !1; // false
         this.nx = 0;
         this.$a = null;
         this.By = 0
@@ -25,8 +25,8 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
                 delete this.$a;
                 a ? b.cancel(a) : (b.By--, 0 >= b.By && b.cancel())
             }
-            this.gL ? this.gL.call(this.lH, this) : this.nE = !0;
-            this.xn || (a = new ctx.CanceledError(this), ctx.SQ(this), ctx.TQ(this, !1, a))
+            this.gL ? this.gL.call(this.lH, this) : this.notCalled = !0;
+            this.xn || (a = new ctx.CanceledError(this), ctx.ensureSingleCall(this), ctx.TQ(this, !1, a))
         }
     };
     ctx.QQ.prototype.dH = function(a, b) {
@@ -39,14 +39,14 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
         a.Jq = !b;
         UQ(a)
     };
-    ctx.SQ = function(a) {
+    ctx.ensureSingleCall = function(a) { // ctx.SQ = ctx.ensureSingleCall
         if (a.xn) {
-            if (!a.nE) throw new AlreadyCalledError(a);
-            a.nE = !1
+            if (!a.notCalled) throw new AlreadyCalledError(a); // *.nE = *.notCalled
+            a.notCalled = !1 // false
         }
     };
     ctx.QQ.prototype.callback = function(a) {
-        ctx.SQ(this);
+        ctx.ensureSingleCall(this);
         ctx.TQ(this, !0, a)
     };
     ctx.QQ.prototype.Td = function(a, b) {
