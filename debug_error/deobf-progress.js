@@ -41,7 +41,7 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
     };
     ctx.SQ = function(a) {
         if (a.xn) {
-            if (!a.nE) throw new VQ(a);
+            if (!a.nE) throw new AlreadyCalledError(a);
             a.nE = !1
         }
     };
@@ -103,12 +103,12 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
             d && (k = (0, ctx.R)(a.dH, a, !0), d = (0, ctx.R)(a.dH, a, !1), b instanceof ctx.QQ ? (b.Zm(k, d), b.ZR = !0) : b.then(k, d));
             c && (b = new YQ(b), XQ[b.Ca] = b, a.nx = b.Ca)
         },
-        VQ = function() {
+        AlreadyCalledError = function() { // VQ = AlreadyCalledError
             ctx.Vc.call(this)
         };
-    ctx.K(VQ, ctx.Vc);
-    VQ.prototype.message = "Deferred has already fired";
-    VQ.prototype.name = "AlreadyCalledError";
+    ctx.K(AlreadyCalledError, ctx.Vc);
+    AlreadyCalledError.prototype.message = "Deferred has already fired";
+    AlreadyCalledError.prototype.name = "AlreadyCalledError"; // thank you :)
     ctx.RQ = function() {
         ctx.Vc.call(this)
     };
