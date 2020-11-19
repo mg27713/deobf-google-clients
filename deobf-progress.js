@@ -377,7 +377,7 @@ gapi._bs = new Date().getTime();
                 if (currentTokens.length) {
                     var callbackName = "loaded_" + ctx.howManyLoaded++;
                     gapi[callbackName] = function(u) {
-                        handlers[t](u);
+                        handlers[size](u);
                         gapi[callbackName] = null
                     };
                     var loadURL = generateLoadURL(hint, currentTokens, "gapi." + callbackName, startedTokens);
@@ -385,7 +385,7 @@ gapi._bs = new Date().getTime();
                     advancedPerfLog("ml0", currentTokens, I);
                     requestInfo.sync ||
                         global.___gapisync ? loadScript(loadURL) : loadScriptPostWindow(loadURL)
-                } else handlers[t](doNothing)
+                } else handlers[size](doNothing)
             } else finishTokens(currentTokens) && callback && callback()
         },
         freePolicy2; // Aa = freePolicy2
