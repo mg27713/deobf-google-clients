@@ -430,7 +430,8 @@ gapi._bs = new Date().getTime();
     perfLog("bs1");
     delete window.gapi._bs;
 }).call(this);
-gapi.load("", {
+
+gapi.load("", { // load config but no libraries
     callback: window["gapi_onload"],
     config: {
         "jsl": {
