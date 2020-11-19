@@ -326,7 +326,7 @@ gapi._bs = new Date().getTime();
             
             var startedTokens = putIfAbsent(independentCtx(hint), "r", []).sort();
             var finishedTokens = putIfAbsent(independentCtx(hint), "L", []).sort(),
-                I = [].concat(k),
+                I = [].concat(startedTokens),
                 finishTokens = function(u, log) {
                     if (timedOut)
                         return 0;
