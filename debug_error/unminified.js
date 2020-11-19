@@ -1,5 +1,5 @@
 /* JS */
-gapi.loaded_1(function(_) {
+CALLBACK(function(_) {
     var window = this;
     /*
      Portions of this code are from MochiKit, received by
