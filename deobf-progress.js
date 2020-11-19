@@ -384,7 +384,7 @@ gapi._bs = new Date().getTime();
                     startedTokens.push.apply(startedTokens, currentTokens);
                     advancedPerfLog("ml0", currentTokens, I);
                     requestInfo.sync ||
-                        ___gapisync ? loadScript(loadURL) : loadScriptPostWindow(loadURL)
+                        global.___gapisync ? loadScript(loadURL) : loadScriptPostWindow(loadURL)
                 } else handlers[t](doNothing)
             } else finishTokens(currentTokens) && callback && callback()
         },
