@@ -334,7 +334,7 @@ gapi._bs = new Date().getTime();
                     clearTimeout(timeoutHandler); // previously window.clearTimeout
                     finishedTokens.push.apply(finishedTokens, currentTokens);
                     var update = ((gapi || {}).config || {}).update;
-                    update ? update(config) : config && putIfAbsent(C, "cu", []).push(config);
+                    update ? update(config) : config && putIfAbsent(ctx, "cu", []).push(config);
                     if (log) {
                         advancedPerfLog("me0", u, I);
                         try {
