@@ -151,7 +151,7 @@ gapi._bs = new Date().getTime();
                 var sides = parts[current].split("="),
                     key = decodeURIComponent(sides[0]),
                     value = decodeURIComponent(sides[1]);
-                2 == sides.length && key && value && (a[key] = a[key] || value)
+                2 == sides.length && key && value && (searchParams[key] = searchParams[key] || value)
             }
             var prefix = "/" + outParts.join("/");
             ia.test(prefix) || hintError("invalid_prefix");
