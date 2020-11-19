@@ -327,7 +327,7 @@ gapi._bs = new Date().getTime();
             var startedTokens = putIfAbsent(independentCtx(hint), "r", []).sort();
             var finishedTokens = putIfAbsent(independentCtx(hint), "L", []).sort(),
                 I = [].concat(startedTokens),
-                finishTokens = function(u, log) {
+                finishTokens = function(tokens, moduleMain) {
                     if (timedOut)
                         return 0;
                     
@@ -335,12 +335,12 @@ gapi._bs = new Date().getTime();
                     finishedTokens.push.apply(finishedTokens, currentTokens);
                     var update = ((gapi || {}).config || {}).update;
                     update ? update(config) : config && putIfAbsent(ctx, "cu", []).push(config);
-                    if (log) {
-                        advancedPerfLog("me0", u, I);
+                    if (moduleMain) {
+                        advancedPerfLog("me0", tokens, I);
                         try {
-                            useIndependentCtx(log, hint, onerror)
+                            useIndependentCtx(moduleMain, hint, onerror)
                         } finally {
-                            advancedPerfLog("me1", u, I)
+                            advancedPerfLog("me1", tokens, I)
                         }
                     }
                     return 1
@@ -356,12 +356,12 @@ gapi._bs = new Date().getTime();
                 currentTokens = onlyInSource(a, startedTokens);
                 var handlers = putIfAbsent(ctx, "CP", []),
                     len = handlers.length;
-                handlers[len] = function(u) {
+                handlers[len] = function(moduleMain) {
                     if (!u) return 0;
                     advancedPerfLog("ml1", currentTokens, I);
                     var doTasksAndCallback = function(paramCallback) {
                             handlers[len] = null;
-                            finishTokens(currentTokens, u) && doTasks(function() {
+                            finishTokens(currentTokens, moduleMain) && doTasks(function() {
                                 callback && callback();
                                 paramCallback()
                             })
@@ -376,8 +376,8 @@ gapi._bs = new Date().getTime();
                 };
                 if (currentTokens.length) {
                     var callbackName = "loaded_" + ctx.howManyLoaded++;
-                    gapi[callbackName] = function(u) {
-                        handlers[len](u);
+                    gapi[callbackName] = function(moduleMain) {
+                        handlers[len](moduleMain);
                         gapi[callbackName] = null
                     };
                     var loadURL = generateLoadURL(hint, currentTokens, "gapi." + callbackName, startedTokens);
