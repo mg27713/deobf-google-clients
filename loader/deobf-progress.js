@@ -263,7 +263,7 @@ gapi._bs = new Date().getTime();
                     handler && Object.prototype.hasOwnProperty.call(config, property) && handler(config[property], a, configRoot)
                 }
         },
-        useIndependentCtx = function(func, owner, errorFilter) { // xa = useIndependentCtx
+        useSubctx = function(func, owner, errorFilter) { // xa = useSubctx
             callQuiet(function() {
                 var d = owner === locateJshParam() ? putIfAbsent(gapi, "_", blankObject()) : blankObject();
                 d = putIfAbsent(independentCtx(owner), "_", d);
@@ -338,7 +338,7 @@ gapi._bs = new Date().getTime();
                     if (moduleMain) {
                         advancedPerfLog("me0", tokens, I);
                         try {
-                            useIndependentCtx(moduleMain, hint, onerror)
+                            useSubctx(moduleMain, hint, onerror)
                         } finally {
                             advancedPerfLog("me1", tokens, I)
                         }
