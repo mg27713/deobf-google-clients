@@ -1,4 +1,4 @@
-/* JS */ gapi.loaded_0(function(_){var window=this;
+/* JS */ CALLBACK(function(_){var window=this;
 /*
 
  Copyright The Closure Library Authors.
