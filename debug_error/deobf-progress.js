@@ -18,7 +18,8 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
         this.By = 0
     };
     ctx.QQ.prototype.cancel = function(a) {
-        if (this.xn) this.ij instanceof ctx.QQ && this.ij.cancel();
+        if (this.shouldCheckSingleCall)
+            this.ij instanceof ctx.QQ && this.ij.cancel();
         else {
             if (this.$a) {
                 var b = this.$a;
@@ -26,7 +27,7 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
                 a ? b.cancel(a) : (b.By--, 0 >= b.By && b.cancel())
             }
             this.gL ? this.gL.call(this.lH, this) : this.notCalled = !0;
-            this.xn || (a = new ctx.CanceledError(this), ctx.ensureSingleCall(this), ctx.TQ(this, !1, a))
+            this.xn || (a = new ctx.CanceledError(this), ctx.checkSingleCall(this), ctx.TQ(this, !1, a))
         }
     };
     ctx.QQ.prototype.dH = function(a, b) {
@@ -34,19 +35,19 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
         ctx.TQ(this, a, b)
     };
     ctx.TQ = function(a, b, c) {
-        a.xn = !0;
+        a.shouldCheckSingleCall = !0; // true
         a.ij = c;
         a.Jq = !b;
         UQ(a)
     };
-    ctx.ensureSingleCall = function(a) { // ctx.SQ = ctx.ensureSingleCall
-        if (a.xn) {
-            if (!a.notCalled) throw new AlreadyCalledError(a); // *.nE = *.notCalled
-            a.notCalled = !1 // false
+    ctx.checkSingleCall = function(what) { // ctx.SQ = ctx.checkSingleCall
+        if (what.shouldCheckSingleCall) { // *.xn = *.shouldCheckSingleCall
+            if (!what.notCalled) throw new AlreadyCalledError(what); // *.nE = *.notCalled
+            what.notCalled = !1 // false
         }
     };
     ctx.QQ.prototype.callback = function(a) {
-        ctx.ensureSingleCall(this);
+        ctx.checkSingleCall(this);
         ctx.TQ(this, !0, a)
     };
     ctx.QQ.prototype.Td = function(a, b) {
@@ -54,7 +55,7 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
     };
     ctx.QQ.prototype.Zm = function(a, b, c) {
         this.Jw.push([a, b, c]);
-        this.xn && UQ(this);
+        this.shouldCheckSingleCall && UQ(this);
         return this
     };
     ctx.QQ.prototype.then = function(a, b, c) {
@@ -77,7 +78,7 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
             })
         },
         UQ = function(a) {
-            if (a.nx && a.xn && WQ(a)) {
+            if (a.nx && a.shouldCheckSingleCall && WQ(a)) {
                 var b = a.nx,
                     c = XQ[b];
                 c && (ctx.A.clearTimeout(c.Ca), delete XQ[b]);
