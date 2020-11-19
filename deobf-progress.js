@@ -170,7 +170,7 @@ gapi._bs = new Date().getTime();
             }
         },
         toName = function(thing) { // S = toName
-            for (var out = [], current = 0, size = thing.length; current < size; ++c) {
+            for (var out = [], current = 0, size = thing.length; current < size; ++current) {
                 var thisChar = thing[current].replace(/\./g, "_").replace(/-/g, "_");
                 verifyName.test(thisChar) && out.push(thisChar)
             }
