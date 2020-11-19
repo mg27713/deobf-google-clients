@@ -1,4 +1,4 @@
-/* JS */ gapi.loaded_1(function(_){var window=this;
+/* JS */ CALLBACK(function(_){var window=this;
 /*
  Portions of this code are from MochiKit, received by
  The Closure Authors under the MIT license. All other code is Copyright
