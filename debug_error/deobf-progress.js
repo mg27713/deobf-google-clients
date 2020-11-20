@@ -1,5 +1,5 @@
 /* JS */
-CALLBACK(function(ctx) { // _ = ctx (because this function is called through useIndependentCtx, not the same ctx as in loader though)
+CALLBACK(function(ctx) { // _ = ctx (because this function is called through useSubctx, not the same ctx as in loader though)
     var window = this; // was never obfuscated, wow!
     /*
      Portions of this code are from MochiKit, received by
@@ -10,16 +10,16 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
         this.Jw = [];
         this.gL = a;
         this.lH = b || null;
-        this.Jq = this.xn = !1;
+        this.Jq = this.shouldCheckSingleCall = !1;
         this.ij = void 0;
         this.notCalled = this.ZR = this.zy = !1; // false
-        this.nx = 0;
+        this.errorTimeout = 0; // QQ.nx = QQ.errorTimeout
         this.$a = null;
         this.By = 0
     };
     ctx.QQ.prototype.cancel = function(a) {
         if (this.shouldCheckSingleCall)
-            this.ij instanceof ctx.QQ && this.ij.cancel();
+            this.ij instanceof ctx.QQ && this.ij.cancel(); // ij is some kind of next or parent pointer
         else {
             if (this.$a) {
                 var b = this.$a;
@@ -27,7 +27,7 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
                 a ? b.cancel(a) : (b.By--, 0 >= b.By && b.cancel())
             }
             this.gL ? this.gL.call(this.lH, this) : this.notCalled = !0;
-            this.xn || (a = new ctx.CanceledError(this), ctx.checkSingleCall(this), ctx.TQ(this, !1, a))
+            this.shouldCheckSingleCall || (a = new ctx.CanceledError(this), ctx.checkSingleCall(this), ctx.TQ(this, !1, a))
         }
     };
     ctx.QQ.prototype.dH = function(a, b) {
@@ -36,7 +36,7 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
     };
     ctx.TQ = function(a, b, c) {
         a.shouldCheckSingleCall = !0; // true
-        a.ij = c;
+        a.ij = c; // next pointer again
         a.Jq = !b;
         UQ(a)
     };
@@ -78,14 +78,16 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
             })
         },
         UQ = function(a) {
-            if (a.nx && a.shouldCheckSingleCall && WQ(a)) {
-                var b = a.nx,
-                    c = XQ[b];
-                c && (ctx.A.clearTimeout(c.Ca), delete XQ[b]);
-                a.nx = 0
+            if (a.errorTimeout && a.shouldCheckSingleCall && WQ(a)) { // gracefully clear timeout
+                var timeout = a.errorTimeout, // QQ.nx = QQ.errorTimeout
+                    asyncError = asyncByTimeout[timeout];
+                asyncError && (ctx.A.clearTimeout(asyncError.timeout), delete asyncByTimeout[timeout]);
+                a.errorTimeout = 0
             }
             a.$a && (a.$a.By--, delete a.$a);
-            b = a.ij;
+            var b = a.ij,
+                c;
+            
             for (var d = c = !1; a.Jw.length && !a.zy;) {
                 var e = a.Jw.shift(),
                     f = e[0],
@@ -102,7 +104,7 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
             }
             a.ij = b;
             d && (k = (0, ctx.R)(a.dH, a, !0), d = (0, ctx.R)(a.dH, a, !1), b instanceof ctx.QQ ? (b.Zm(k, d), b.ZR = !0) : b.then(k, d));
-            c && (b = new YQ(b), XQ[b.Ca] = b, a.nx = b.Ca)
+            c && (b = new AsyncError(b), asyncByTimeout[b.timeout] = b, a.errorTimeout = b.timeout)
         },
         AlreadyCalledError = function() { // VQ = AlreadyCalledError
             ctx.Vc.call(this)
@@ -116,15 +118,19 @@ CALLBACK(function(ctx) { // _ = ctx (because this function is called through use
     ctx.K(ctx.CanceledError, ctx.Vc);
     ctx.CanceledError.prototype.message = "Deferred was canceled";
     ctx.CanceledError.prototype.name = "CanceledError"; // thanks again!
-    var YQ = function(a) {
-        this.Ca = ctx.A.setTimeout((0, ctx.R)(this.n1, this), 0);
-        this.ju = a
+    
+    var AsyncError = function(error) { // YQ = AsyncError
+        this.timeout = ctx.A.setTimeout((0, ctx.R)(this.throwError, this), 0); // AsyncError.Ca = timeout
+        this.error = error // AsyncError.ju = error
     };
-    YQ.prototype.n1 = function() {
-        delete XQ[this.Ca];
-        throw this.ju;
+    AsyncError.prototype.throwError = function() { // AsyncError.n1 = throwError
+        delete asyncByTimeout[this.timeout];
+        throw this.error;
     };
-    var XQ = {};
+    
+    // key: timeout for AsyncError
+    // value: actual AsyncError
+    var asyncByTimeout = {}; // XQ = asyncByTimeout
 
     var ZQ = function(a) {
             (0, eval)(a)
