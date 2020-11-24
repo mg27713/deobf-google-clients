@@ -6,7 +6,7 @@ CALLBACK(function(ctx) { // _ = ctx
      Copyright The Closure Library Authors.
      SPDX-License-Identifier: Apache-2.0
     */
-    var iter, defineProperty, findGlobalRoot, globalRoot, Da, Ea, La, Sa;
+    var iter, defineProperty, findGlobalRoot, globalRoot, computeIfAbsent, Ea, La, Sa;
     ctx.ja = function(a) {
         return function() {
             return ctx.ea[a].apply(this, arguments)
@@ -32,7 +32,7 @@ CALLBACK(function(ctx) { // _ = ctx
         a[b] = c.value;
         return a
     };
-    xa = function(outerThis) { // xa = findGlobalRoot
+    findGlobalRoot = function(outerThis) { // xa = findGlobalRoot
         var possibleRoots = ["object" == typeof globalThis && globalThis, outerThis, "object" == typeof window && window, "object" == typeof self && self, "object" == typeof global && global];
         
         for (var index = 0; index < possibleRoots.length; ++index) {
@@ -44,26 +44,31 @@ CALLBACK(function(ctx) { // _ = ctx
         throw Error("Failed to locate global root"); // originally Error("a")
     };
     globalRoot = findGlobalRoot(this); // Ba = globalRoot
-    Da = function(a, b) {
-        if (b) a: {
-            var c = globalRoot;a = a.split(".");
-            for (var d = 0; d < a.length - 1; d++) {
-                var e = a[d];
-                if (!(e in c)) break a;
-                c = c[e]
+    computeIfAbsent = function(childName, gen) { // Da = computeIfAbsent
+        if (gen) genBlock: {
+            var obj = globalRoot;
+            var nameParts = childName.split(".");
+            for (var index = 0; index < nameParts.length - 1; index++) {
+                var current = nameParts[index];
+                if (!(current in obj)) break genBlock;
+                obj = obj[current]
             }
-            a = a[a.length - 1];d = c[a];b = b(d);b != d && null != b && oa(c, a, {
+            
+            var lastName = nameParts[nameParts.length - 1];
+            var child = obj[lastName];
+            var mapped = gen(child);
+            mapped != child && null != mapped && defineProperty(obj, lastName, {
                 configurable: !0,
                 writable: !0,
-                value: b
+                value: mapped
             })
         }
     };
-    Da("Symbol", function(a) {
+    computeIfAbsent("Symbol", function(a) {
         if (a) return a;
         var b = function(e, f) {
             this.pO = e;
-            oa(this, "description", {
+            defineProperty(this, "description", {
                 configurable: !0,
                 writable: !0,
                 value: f
