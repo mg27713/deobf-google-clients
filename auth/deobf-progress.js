@@ -1,22 +1,22 @@
 /* JS */
-CALLBACK(function(_) {
-    var window = this;
+CALLBACK(function(ctx) { // _ = ctx
+    var window = this; // also not obfuscated
     /*
 
      Copyright The Closure Library Authors.
      SPDX-License-Identifier: Apache-2.0
     */
-    var ma, oa, xa, Ba, Da, Ea, La, Sa;
-    _.ja = function(a) {
+    var iter, defineProperty, findGlobalRoot, globalRoot, Da, Ea, La, Sa;
+    ctx.ja = function(a) {
         return function() {
-            return _.ea[a].apply(this, arguments)
+            return ctx.ea[a].apply(this, arguments)
         }
     };
-    _._DumpException = function(a) {
+    ctx._DumpException = function(a) { // random placement???
         throw a;
     };
-    _.ea = [];
-    ma = function(a) {
+    ctx.ea = [];
+    iter = function(a) { // ma = iter
         var b = 0;
         return function() {
             return b < a.length ? {
@@ -27,23 +27,26 @@ CALLBACK(function(_) {
             }
         }
     };
-    oa = "function" == typeof Object.defineProperties ? Object.defineProperty : function(a, b, c) {
+    defineProperty = "function" == typeof Object.defineProperties ? Object.defineProperty : function(a, b, c) { // oa = defineProperty
         if (a == Array.prototype || a == Object.prototype) return a;
         a[b] = c.value;
         return a
     };
-    xa = function(a) {
-        a = ["object" == typeof globalThis && globalThis, a, "object" == typeof window && window, "object" == typeof self && self, "object" == typeof global && global];
-        for (var b = 0; b < a.length; ++b) {
-            var c = a[b];
-            if (c && c.Math == Math) return c
+    xa = function(outerThis) { // xa = findGlobalRoot
+        var possibleRoots = ["object" == typeof globalThis && globalThis, outerThis, "object" == typeof window && window, "object" == typeof self && self, "object" == typeof global && global];
+        
+        for (var index = 0; index < possibleRoots.length; ++index) {
+            var current = possibleRoots[index];
+            if (current && current.Math == Math)
+                return current
         }
-        throw Error("a");
+        
+        throw Error("Failed to locate global root"); // originally Error("a")
     };
-    Ba = xa(this);
+    globalRoot = findGlobalRoot(this); // Ba = globalRoot
     Da = function(a, b) {
         if (b) a: {
-            var c = Ba;a = a.split(".");
+            var c = globalRoot;a = a.split(".");
             for (var d = 0; d < a.length - 1; d++) {
                 var e = a[d];
                 if (!(e in c)) break a;
