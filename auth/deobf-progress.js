@@ -6,7 +6,7 @@ CALLBACK(function(ctx) { // _ = ctx
      Copyright The Closure Library Authors.
      SPDX-License-Identifier: Apache-2.0
     */
-    var iter, defineProperty, findGlobalRoot, globalRoot, computeIfAbsent, Ea, La, Sa;
+    var iter, defineProperty, findGlobalRoot, globalRoot, compute, iterableIterator, La, Sa;
     ctx.ja = function(a) {
         return function() {
             return ctx.ea[a].apply(this, arguments)
@@ -44,7 +44,7 @@ CALLBACK(function(ctx) { // _ = ctx
         throw Error("Failed to locate global root"); // originally Error("a")
     };
     globalRoot = findGlobalRoot(this); // Ba = globalRoot
-    computeIfAbsent = function(childName, gen) { // Da = computeIfAbsent
+    compute = function(childName, gen) { // Da = compute
         if (gen) genBlock: {
             var obj = globalRoot;
             var nameParts = childName.split(".");
@@ -64,50 +64,65 @@ CALLBACK(function(ctx) { // _ = ctx
             })
         }
     };
-    computeIfAbsent("Symbol", function(a) {
-        if (a) return a;
-        var b = function(e, f) {
-            this.pO = e;
+    compute("Symbol", function(old) {
+        if (old)
+            return old;
+        
+        var NewSymbol = function(str, desc) {
+            this.str = str;
             defineProperty(this, "description", {
                 configurable: !0,
                 writable: !0,
-                value: f
+                value: desc
             })
         };
-        b.prototype.toString = function() {
-            return this.pO
+        
+        NewSymbol.prototype.toString = function() {
+            return this.str
         };
-        var c = 0,
-            d = function(e) {
-                if (this instanceof d) throw new TypeError("Symbol is not a constructor");
-                return new b("jscomp_symbol_" + (e || "") + "_" + c++, e)
+        
+        var nSymbols = 0,
+            create = function(obj) {
+                if (this instanceof create)
+                    throw new TypeError("Symbol is not a constructor"); // just like in the real Symbol
+                
+                return new NewSymbol("jscomp_symbol_" + (obj || "") + "_" + nSymbols++, obj)
             };
-        return d
+        
+        return create
     });
-    Da("Symbol.iterator", function(a) {
-        if (a) return a;
-        a = Symbol("Symbol.iterator");
-        for (var b = "Array Int8Array Uint8Array Uint8ClampedArray Int16Array Uint16Array Int32Array Uint32Array Float32Array Float64Array".split(" "), c = 0; c < b.length; c++) {
-            var d = Ba[b[c]];
-            "function" === typeof d && "function" != typeof d.prototype[a] && oa(d.prototype, a, {
+    
+    compute("Symbol.iterator", function(old) {
+        if (old)
+            return old;
+        
+        var propSymbol = Symbol("Symbol.iterator");
+        for (var arrayTypes = "Array Int8Array Uint8Array Uint8ClampedArray Int16Array Uint16Array Int32Array Uint32Array Float32Array Float64Array".split(" "), index = 0; index < b.length; index++) {
+            var currentType = globalRoot[arrayTypes[index]];
+            "function" === typeof currentType && "function" != typeof currentType.prototype[propSymbol] && defineProperty(currentType.prototype, propSymbol, {
                 configurable: !0,
                 writable: !0,
                 value: function() {
-                    return Ea(ma(this))
+                    return iterableIterator(iter(this))
                 }
             })
         }
-        return a
+        
+        return propSymbol
     });
-    Ea = function(a) {
-        a = {
-            next: a
+    
+    iterableIterator = function(iterFunc) { // Ea = iterableIterator
+        var iterator = {
+            next: iterFunc
         };
-        a[Symbol.iterator] = function() {
+        
+        iterator[Symbol.iterator] = function() {
             return this
         };
-        return a
+        
+        return iterator
     };
+    
     _.Ha = function(a) {
         var b = "undefined" != typeof Symbol && Symbol.iterator && a[Symbol.iterator];
         return b ? b.call(a) : {
